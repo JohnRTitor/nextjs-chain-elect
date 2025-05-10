@@ -1,6 +1,6 @@
 {
   "addresses": {
-    "sepolia": "0x0f3CB74806185c9Ee5De47213862ac846BB04134"
+    "sepolia": "0x44c945553F830c3d82bEB941a19084A569b3a4A3"
   },
   "abi": [
     {
@@ -558,7 +558,7 @@
         },
         {
           "internalType": "uint256",
-          "name": "timeWhenRegisteredEpoch",
+          "name": "registrationTimestamp",
           "type": "uint256"
         }
       ],
@@ -599,7 +599,7 @@
     },
     {
       "inputs": [],
-      "name": "getMyCandidateDetails",
+      "name": "getMyDetails",
       "outputs": [
         {
           "internalType": "string",
@@ -638,7 +638,7 @@
         },
         {
           "internalType": "uint256",
-          "name": "timeWhenRegisteredEpoch",
+          "name": "registrationTimestamp",
           "type": "uint256"
         }
       ],

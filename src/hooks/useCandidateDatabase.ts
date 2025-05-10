@@ -463,6 +463,55 @@ export function useGetAdminCount() {
   };
 }
 
+// Additional utility hooks
+export function useGetOwner() {
+  const { data, isLoading, isError, refetch } =
+    useCandidateDatabaseReadFunction<`0x${string}`>("getOwner");
+
+  return {
+    owner: data,
+    isLoading,
+    isError,
+    refetch,
+  };
+}
+
+export function useIsAdmin(address: `0x${string}` | undefined) {
+  const { data, isLoading, isError, refetch } =
+    useCandidateDatabaseReadFunction<boolean>("isAdmin", address ? [address] : undefined);
+
+  return {
+    isAdmin: data,
+    isLoading,
+    isError,
+    refetch,
+  };
+}
+
+export function useCalculateAge(dateOfBirthEpoch: bigint | undefined) {
+  const { data, isLoading, isError, refetch } =
+    useCandidateDatabaseReadFunction<bigint>("calculateAge", dateOfBirthEpoch ? [dateOfBirthEpoch] : undefined);
+
+  return {
+    age: data,
+    isLoading,
+    isError,
+    refetch,
+  };
+}
+
+export function useGetMyAge() {
+  const { data, isLoading, isError, refetch } =
+    useCandidateDatabaseReadFunction<bigint>("getMyAge");
+
+  return {
+    age: data,
+    isLoading,
+    isError,
+    refetch,
+  };
+}
+
 // Data Import Functions
 export function useAdminImportCandidate() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
