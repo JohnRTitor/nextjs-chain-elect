@@ -152,6 +152,9 @@ function VoterRow({ address, onView, onEdit, onRemove }: VoterRowProps) {
   const formattedAddress =
     address && `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
 
+  // Check if voter has voted
+  const hasVoted = voterDetails?.timesVoted ? voterDetails.timesVoted > 0n : false;
+
   return (
     <TableRow>
       <TableCell className="font-mono">{formattedAddress}</TableCell>
@@ -159,13 +162,9 @@ function VoterRow({ address, onView, onEdit, onRemove }: VoterRowProps) {
         {isLoading ? (
           <LoadingSpinner />
         ) : (
-          <Badge
-            variant={
-              voterDetails?.timesVoted && voterDetails.timesVoted > 0n ? "default" : "outline"
-            }
-          >
-            {voterDetails?.timesVoted && voterDetails.timesVoted > 0n
-              ? `Voted ${voterDetails.timesVoted.toString()} ${voterDetails.timesVoted === 1n ? "time" : "times"}`
+          <Badge variant={hasVoted ? "default" : "outline"}>
+            {hasVoted
+              ? `Voted ${voterDetails!.timesVoted.toString()} ${voterDetails!.timesVoted === 1n ? "time" : "times"}`
               : "Not Voted"}
           </Badge>
         )}
@@ -185,11 +184,7 @@ function VoterRow({ address, onView, onEdit, onRemove }: VoterRowProps) {
             <DropdownMenuItem onClick={onEdit}>
               <EditIcon className="mr-2 h-4 w-4" /> Edit Voter
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={onRemove}
-              className="text-destructive"
-              disabled={voterDetails?.timesVoted && voterDetails.timesVoted > 0n}
-            >
+            <DropdownMenuItem onClick={onRemove} className="text-destructive" disabled={hasVoted}>
               <Trash2Icon className="mr-2 h-4 w-4" /> Remove Voter
             </DropdownMenuItem>
           </DropdownMenuContent>

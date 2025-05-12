@@ -49,7 +49,7 @@ export function RemoveVoterDialog({
     : "";
 
   // Disable removal if the voter has already voted
-  const hasVoted = voterDetails?.timesVoted && voterDetails.timesVoted > 0n;
+  const hasVoted = voterDetails?.timesVoted ? voterDetails.timesVoted > 0n : false;
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChangeAction}>

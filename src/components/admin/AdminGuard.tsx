@@ -26,7 +26,7 @@ export function AdminGuard({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isLoading) {
       // If admin in any contract, allow access
-      setIsAdmin(isElectionAdmin || isVoterAdmin || isCandidateAdmin);
+      setIsAdmin(!!(isElectionAdmin || isVoterAdmin || isCandidateAdmin));
     }
   }, [isElectionAdmin, isVoterAdmin, isCandidateAdmin, isLoading]);
 

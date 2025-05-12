@@ -6,7 +6,7 @@ export const AdminAddressSchema = v.object({
   address: v.pipe(
     v.string("Wallet address is required"),
     v.nonEmpty("Wallet address is required"),
-    v.custom((value) => isAddress(value), "Invalid Ethereum address format")
+    v.custom((value) => isAddress(value as string), "Invalid Ethereum address format"),
   ),
 });
 

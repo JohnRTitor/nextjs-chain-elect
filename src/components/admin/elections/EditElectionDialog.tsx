@@ -126,7 +126,7 @@ export function EditElectionDialog({
                   <FormItem>
                     <FormLabel>Election Name</FormLabel>
                     <FormControl>
-                      <Input {...field} disabled={isFormDisabled} />
+                      <Input {...field} disabled={!!isFormDisabled} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -140,7 +140,7 @@ export function EditElectionDialog({
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Textarea {...field} rows={4} disabled={isFormDisabled} />
+                      <Textarea {...field} rows={4} disabled={!!isFormDisabled} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

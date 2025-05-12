@@ -280,7 +280,7 @@ function ElectionRow({
                 className="text-destructive"
                 disabled={
                   electionDetails?.isActive ||
-                  (electionDetails?.totalVotes && electionDetails.totalVotes > 0n)
+                  !!(electionDetails?.totalVotes && electionDetails.totalVotes > 0n)
                 }
               >
                 <Trash2Icon className="mr-2 h-4 w-4" /> Delete Election

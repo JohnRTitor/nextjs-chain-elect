@@ -26,10 +26,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { FormDatePickerControl } from "@/components/ui/custom/form-date-picker";
 
 import { useAdminAddVoter } from "@/hooks/useVoterDatabase";
-import {
-  VoterFormValues,
-  voterFormToContractParams,
-} from "@/lib/schemas/voter-form";
+import { VoterFormValues, voterFormToContractParams } from "@/lib/schemas/voter-form";
 import { Address } from "viem";
 import { isAddress } from "viem";
 
@@ -40,7 +37,7 @@ const AddVoterFormSchema = v.object({
   walletAddress: v.pipe(
     v.string("Wallet address is required"),
     v.nonEmpty("Wallet address is required"),
-    v.custom((value) => isAddress(value), "Invalid Ethereum address format"),
+    v.custom((value) => isAddress(value as string), "Invalid Ethereum address format"),
   ),
   name: v.pipe(
     v.string("Name must be a string"),
