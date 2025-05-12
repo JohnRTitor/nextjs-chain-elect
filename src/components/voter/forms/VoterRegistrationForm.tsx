@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { valibotResolver } from "@hookform/resolvers/valibot";
-import { Loader2Icon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {

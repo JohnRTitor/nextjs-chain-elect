@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useGetMyRegistrationStatus } from "@/hooks/useVoterDatabase";
-import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { PageHeader } from "@/components/common/PageHeader";
 import { LoadingView } from "@/components/common/LoadingView";
 import { VoterRegistration } from "@/components/voter/registration/VoterRegistration";

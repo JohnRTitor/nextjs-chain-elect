@@ -92,7 +92,7 @@ export default function AboutPage() {
         <CardContent>
           <p className="text-lg text-muted-foreground">
             To participate in an election, register as a voter, and cast your vote securely. If
-            you're an administrator, you can manage voters and candidates through the admin
+            you&apos;re an administrator, you can manage voters and candidates through the admin
             dashboard.
           </p>
         </CardContent>
