@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useGetMyCandidateDetails } from "@/hooks/useCandidateDatabase";
+import { useGetMyDetails } from "@/hooks/useCandidateDatabase";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { InfoIcon } from "lucide-react";
-import { CandidateDetails } from "@/types";
 import { CandidateOverview } from "./CandidateOverview";
 import { CandidateTabs } from "./CandidateTabs";
 
@@ -16,7 +15,7 @@ interface CandidateManagementProps {
 export function CandidateManagement({
   onRegistrationStatusChangeAction,
 }: CandidateManagementProps) {
-  const { candidateDetails, isLoading, isError, refetch } = useGetMyCandidateDetails();
+  const { candidateDetails, isLoading, isError, refetch } = useGetMyDetails();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Function to handle successful updates

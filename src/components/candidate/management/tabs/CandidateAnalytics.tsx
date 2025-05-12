@@ -27,7 +27,7 @@ const dummyData = [
 export function CandidateAnalytics({ candidateName }: CandidateAnalyticsProps) {
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold">Campaign Analytics</h2>
+      <h2 className="text-xl font-semibold">Campaign Analytics for {candidateName}</h2>
 
       <div className="grid gap-6 md:grid-cols-3">
         <Card>
