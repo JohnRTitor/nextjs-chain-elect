@@ -1,6 +1,6 @@
 {
   "addresses": {
-    "sepolia": "0x8D46d04198Bb54F0849507cA0bAc94C691fc7b7d"
+    "sepolia": "0x4a382Ba4d02a8c9a667E24476d864f92Be570078"
   },
   "abi": [
     {
@@ -277,6 +277,11 @@
           "internalType": "string",
           "name": "_presentAddress",
           "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_email",
+          "type": "string"
         }
       ],
       "name": "addVoter",
@@ -312,9 +317,14 @@
           "type": "string"
         },
         {
-          "internalType": "bool",
-          "name": "_hasVoted",
-          "type": "bool"
+          "internalType": "string",
+          "name": "_email",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_timesVoted",
+          "type": "uint256"
         }
       ],
       "name": "adminAddVoter",
@@ -346,8 +356,27 @@
       "outputs": [
         {
           "internalType": "address[]",
-          "name": "",
+          "name": "voterAddresses",
           "type": "address[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_voterAddress",
+          "type": "address"
+        }
+      ],
+      "name": "adminGetRegistrationStatus",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "isRegistered",
+          "type": "bool"
         }
       ],
       "stateMutability": "view",
@@ -359,7 +388,7 @@
       "outputs": [
         {
           "internalType": "uint256",
-          "name": "",
+          "name": "count",
           "type": "uint256"
         }
       ],
@@ -397,9 +426,14 @@
           "type": "string"
         },
         {
-          "internalType": "bool",
-          "name": "hasVoted",
-          "type": "bool"
+          "internalType": "string",
+          "name": "email",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timesVoted",
+          "type": "uint256"
         },
         {
           "internalType": "uint256",
@@ -449,7 +483,7 @@
           "type": "address"
         }
       ],
-      "name": "adminRemoveVoter",
+      "name": "adminMarkVoted",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -460,14 +494,9 @@
           "internalType": "address",
           "name": "_voterAddress",
           "type": "address"
-        },
-        {
-          "internalType": "bool",
-          "name": "_hasVoted",
-          "type": "bool"
         }
       ],
-      "name": "adminSetVotingStatus",
+      "name": "adminRemoveVoter",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -500,9 +529,14 @@
           "type": "string"
         },
         {
-          "internalType": "bool",
-          "name": "_hasVoted",
-          "type": "bool"
+          "internalType": "string",
+          "name": "_email",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_timesVoted",
+          "type": "uint256"
         }
       ],
       "name": "adminUpdateVoter",
@@ -518,25 +552,6 @@
           "internalType": "bool",
           "name": "",
           "type": "bool"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_dateOfBirthEpoch",
-          "type": "uint256"
-        }
-      ],
-      "name": "calculateAge",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
         }
       ],
       "stateMutability": "view",
@@ -581,7 +596,7 @@
       "outputs": [
         {
           "internalType": "uint256",
-          "name": "",
+          "name": "age",
           "type": "uint256"
         }
       ],
@@ -613,9 +628,14 @@
           "type": "string"
         },
         {
-          "internalType": "bool",
-          "name": "hasVoted",
-          "type": "bool"
+          "internalType": "string",
+          "name": "email",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "timesVoted",
+          "type": "uint256"
         },
         {
           "internalType": "uint256",
@@ -724,6 +744,11 @@
         {
           "internalType": "string",
           "name": "_presentAddress",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_email",
           "type": "string"
         }
       ],

@@ -1,6 +1,6 @@
 {
   "addresses": {
-    "sepolia": "0x44c945553F830c3d82bEB941a19084A569b3a4A3"
+    "sepolia": "0xd243B769886F265b3853C4546650c90FD02105F3"
   },
   "abi": [
     {
@@ -434,25 +434,6 @@
       "type": "function"
     },
     {
-      "inputs": [
-        {
-          "internalType": "uint256",
-          "name": "_dateOfBirthEpoch",
-          "type": "uint256"
-        }
-      ],
-      "name": "calculateAge",
-      "outputs": [
-        {
-          "internalType": "uint256",
-          "name": "",
-          "type": "uint256"
-        }
-      ],
-      "stateMutability": "view",
-      "type": "function"
-    },
-    {
       "inputs": [],
       "name": "deleteCandidate",
       "outputs": [],
@@ -590,7 +571,7 @@
       "outputs": [
         {
           "internalType": "uint256",
-          "name": "",
+          "name": "age",
           "type": "uint256"
         }
       ],
