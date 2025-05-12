@@ -1,20 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  type ChartConfig,
+} from "@/components/ui/chart";
 
 interface CandidateAnalyticsProps {
   candidateName: string;
 }
 
 // Placeholder data - in a real application this would come from your backend or blockchain
-const dummyData = [
+const chartData = [
   { day: "Mon", votes: 4 },
   { day: "Tue", votes: 7 },
   { day: "Wed", votes: 5 },
@@ -23,6 +21,13 @@ const dummyData = [
   { day: "Sat", votes: 10 },
   { day: "Sun", votes: 6 },
 ];
+
+const chartConfig = {
+  votes: {
+    label: "Votes",
+    color: "hsl(var(--chart-1))",
+  },
+} satisfies ChartConfig;
 
 export function CandidateAnalytics({ candidateName }: CandidateAnalyticsProps) {
   return (
@@ -67,31 +72,31 @@ export function CandidateAnalytics({ candidateName }: CandidateAnalyticsProps) {
           <CardTitle>Vote Trends</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={dummyData}
-                margin={{
-                  top: 5,
-                  right: 30,
-                  left: 20,
-                  bottom: 5,
-                }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="day" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="votes" fill="#8884d8" />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+          <ChartContainer config={chartConfig} className="min-h-[300px]">
+            <BarChart accessibilityLayer data={chartData}>
+              <CartesianGrid vertical={false} stroke="var(--border)" />
+              <XAxis
+                dataKey="day"
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
+                tick={{ fill: "var(--foreground)" }}
+              />
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Bar
+                dataKey="votes"
+                fill="currentColor"
+                className="text-primary dark:text-primary/80"
+                radius={4}
+              />
+            </BarChart>
+          </ChartContainer>
         </CardContent>
       </Card>
 
-      <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-md">
-        <h3 className="text-sm font-medium mb-2 text-yellow-800">Note</h3>
-        <p className="text-sm text-yellow-800">
+      <div className="bg-yellow-100 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 p-4 rounded-md">
+        <h3 className="text-sm font-medium mb-2 text-yellow-800 dark:text-yellow-300">Note</h3>
+        <p className="text-sm text-yellow-800 dark:text-yellow-300">
           This is a preview of analytics functionality. In the production version, this tab will
           show real-time voting statistics and campaign performance metrics from the blockchain.
         </p>
