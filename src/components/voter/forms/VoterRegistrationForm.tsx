@@ -42,6 +42,7 @@ export function VoterRegistrationForm({
       dateOfBirth: "",
       gender: 0,
       presentAddress: "",
+      email: "",
     },
     mode: "onBlur",
   });
@@ -83,6 +84,20 @@ export function VoterRegistrationForm({
             disabled={isLoading}
             required={true}
             isDateOfBirth={true}
+          />
+          
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email Address</FormLabel>
+                <FormControl>
+                  <Input placeholder="your.email@example.com" type="email" {...field} disabled={isLoading} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
         </div>
 

@@ -86,6 +86,20 @@ export function VoterUpdateForm({
               required={true}
               isDateOfBirth={true}
             />
+            
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email Address</FormLabel>
+                  <FormControl>
+                    <Input type="email" {...field} disabled={isProcessing} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
           
           <div className="mt-4">

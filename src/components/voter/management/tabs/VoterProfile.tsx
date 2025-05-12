@@ -17,6 +17,11 @@ export function VoterProfile({ voterDetails }: VoterProfileProps) {
         </div>
 
         <div className="space-y-1">
+          <p className="text-sm font-medium text-muted-foreground">Email</p>
+          <p className="text-base">{voterDetails.email}</p>
+        </div>
+
+        <div className="space-y-1">
           <p className="text-sm font-medium text-muted-foreground">Date of Birth</p>
           <p className="text-base">{epochToDateString(voterDetails.dateOfBirthEpoch)}</p>
         </div>
@@ -34,8 +39,13 @@ export function VoterProfile({ voterDetails }: VoterProfileProps) {
         <div className="space-y-1">
           <p className="text-sm font-medium text-muted-foreground">Registration Date</p>
           <p className="text-base">
-            {new Date(Number(voterDetails.timeWhenRegisteredEpoch) * 1000).toLocaleString()}
+            {new Date(Number(voterDetails.registrationTimestamp) * 1000).toLocaleString()}
           </p>
+        </div>
+        
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-muted-foreground">Times Voted</p>
+          <p className="text-base">{voterDetails.timesVoted.toString()}</p>
         </div>
       </div>
 

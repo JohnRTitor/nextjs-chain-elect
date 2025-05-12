@@ -14,6 +14,7 @@ import { VoterManagement } from "@/components/voter/management/VoterManagement";
 export function VoterPortal() {
   const { isRegistered: initialRegStatus, isLoading: initialLoading } =
     useGetMyRegistrationStatus();
+
   const [isRegistered, setIsRegistered] = useState<boolean | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -46,9 +47,7 @@ export function VoterPortal() {
       ) : isRegistered ? (
         <VoterManagement onRegistrationStatusChangeAction={handleRegistrationStatusChange} />
       ) : (
-        <VoterRegistration
-          onRegistrationSuccess={() => handleRegistrationStatusChange(true)}
-        />
+        <VoterRegistration onRegistrationSuccess={() => handleRegistrationStatusChange(true)} />
       )}
     </div>
   );

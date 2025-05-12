@@ -19,6 +19,9 @@ export function VoterOverview({ voterDetails }: VoterOverviewProps) {
       .substring(0, 2);
   };
 
+  // Determine if the voter has voted by checking timesVoted
+  const hasVoted = voterDetails.timesVoted > 0n;
+
   return (
     <Card>
       <CardContent className="p-6">
@@ -32,13 +35,14 @@ export function VoterOverview({ voterDetails }: VoterOverviewProps) {
           <div className="flex-1 text-center md:text-left space-y-2">
             <div className="space-y-1">
               <h2 className="text-2xl font-bold">{voterDetails.name}</h2>
+              <p className="text-muted-foreground">{voterDetails.email}</p>
             </div>
             
             <div className="flex flex-wrap gap-2 justify-center md:justify-start">
               <Badge>{voterDetails.gender === 0 ? "Male" : "Female"}</Badge>
               <Badge variant="outline">Age: {calculateAge(voterDetails.dateOfBirthEpoch)}</Badge>
               <Badge variant="secondary">Registered Voter</Badge>
-              {voterDetails.hasVoted && (
+              {hasVoted && (
                 <Badge variant="default" className="bg-green-600">Has Voted</Badge>
               )}
             </div>
@@ -47,7 +51,7 @@ export function VoterOverview({ voterDetails }: VoterOverviewProps) {
           <div className="text-center md:text-right">
             <div className="text-muted-foreground text-sm">Registered on</div>
             <div className="font-medium">
-              {new Date(Number(voterDetails.timeWhenRegisteredEpoch) * 1000).toLocaleDateString()}
+              {new Date(Number(voterDetails.registrationTimestamp) * 1000).toLocaleDateString()}
             </div>
           </div>
         </div>

@@ -55,6 +55,9 @@ export function VoterSettings({
     onUpdateSuccess();
     setEditMode(false);
   };
+  
+  // Determine if the voter has voted by checking timesVoted
+  const hasVoted = voterDetails.timesVoted > 0n;
 
   return (
     <div className="space-y-6">
@@ -86,12 +89,12 @@ export function VoterSettings({
                     variant="outline"
                     onClick={() => setEditMode(true)}
                     className="flex items-center mt-4"
-                    disabled={voterDetails.hasVoted}
+                    disabled={hasVoted}
                   >
                     <PencilIcon className="mr-2 h-4 w-4" /> Update Information
                   </Button>
                   
-                  {voterDetails.hasVoted && (
+                  {hasVoted && (
                     <p className="text-amber-600 text-sm mt-2">
                       You cannot update your information after casting a vote.
                     </p>
@@ -135,7 +138,7 @@ export function VoterSettings({
                       <AlertDialogTrigger asChild>
                         <Button 
                           variant="destructive" 
-                          disabled={isDeleteProcessing || voterDetails.hasVoted} 
+                          disabled={isDeleteProcessing || hasVoted} 
                           className="mt-2"
                         >
                           {isDeleteProcessing ? (
@@ -170,7 +173,7 @@ export function VoterSettings({
                       </AlertDialogContent>
                     </AlertDialog>
                     
-                    {voterDetails.hasVoted && (
+                    {hasVoted && (
                       <p className="text-amber-600 text-sm mt-2">
                         You cannot cancel your registration after casting a vote.
                       </p>

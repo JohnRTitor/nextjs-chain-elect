@@ -5,7 +5,6 @@ import { useGetMyDetails } from "@/hooks/useVoterDatabase";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { InfoIcon } from "lucide-react";
-import { VoterDetails } from "@/types";
 import { VoterOverview } from "./VoterOverview";
 import { VoterTabs } from "./VoterTabs";
 
@@ -13,27 +12,33 @@ interface VoterManagementProps {
   onRegistrationStatusChangeAction: (status: boolean) => void;
 }
 
-export function VoterManagement({
-  onRegistrationStatusChangeAction,
-}: VoterManagementProps) {
-  const { voterDetails, isLoading, isError, refetch } = useGetMyDetails();
+export function VoterManagement({ onRegistrationStatusChangeAction }: VoterManagementProps) {
+  const {
+    voterDetails,
+    isLoading: detailsLoading,
+    isError: detailsError,
+    refetch: refetchDetails,
+  } = useGetMyDetails();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Function to handle successful updates
   const handleDataRefresh = async () => {
-    // Refresh data
-    await refetch();
+    // Refresh voter details
+    await refetchDetails();
     setRefreshTrigger((prev) => prev + 1);
   };
 
   useEffect(() => {
     // Set up an interval to periodically refetch data
     const interval = setInterval(() => {
-      refetch();
+      refetchDetails();
     }, 30000); // Every 30 seconds
 
     return () => clearInterval(interval);
-  }, [refetch]);
+  }, [refetchDetails]);
+
+  const isLoading = detailsLoading;
+  const isError = detailsError;
 
   if (isLoading) {
     return <LoadingSpinner message="Loading your voter information..." />;

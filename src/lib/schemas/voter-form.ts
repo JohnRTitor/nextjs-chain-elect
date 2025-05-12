@@ -21,6 +21,11 @@ export const VoterFormSchema = v.object({
     v.minLength(5, "Address must be at least 5 characters"),
     v.maxLength(500, "Address must be less than 500 characters"),
   ),
+  email: v.pipe(
+    v.string("Email must be a string"),
+    v.transform((val) => val.trim()), // Trim whitespace
+    v.email("Please enter a valid email address"),
+  ),
 });
 
 // Type for the form data
@@ -43,11 +48,13 @@ export function contractDataToVoterForm(contractData: {
   dateOfBirthEpoch: bigint;
   gender: number;
   presentAddress: string;
+  email: string;
 }): VoterFormValues {
   return {
     name: contractData.name,
     dateOfBirth: epochToDateString(contractData.dateOfBirthEpoch),
     gender: contractData.gender as Gender,
     presentAddress: contractData.presentAddress,
+    email: contractData.email,
   };
 }
