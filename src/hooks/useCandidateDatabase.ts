@@ -8,14 +8,14 @@ import {
   useWriteContract,
 } from "wagmi";
 import { useEffect, useState } from "react";
-import { ContractFunctionArgs } from "viem";
+import { Address, ContractFunctionArgs, Hash } from "viem";
 import { CandidateContractParams, CandidateDetails, Gender } from "@/types";
 
 // CORE HOOKS FOR READ AND WRITE OPERATIONS
 export function useCandidateDatabaseWriteFunction(functionName: string) {
   const { address } = useAccount();
   const { writeContractAsync, isPending } = useWriteContract();
-  const [hash, setHash] = useState<`0x${string}` | undefined>(undefined);
+  const [hash, setHash] = useState<Hash | undefined>(undefined);
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash,
@@ -125,12 +125,15 @@ export function useAddCandidate() {
     qualifications,
     manifesto,
   }: CandidateContractParams) => {
-    return execute([name, dateOfBirthEpoch, gender, presentAddress, email, qualifications, manifesto], {
-      loading: "Submitting candidate registration...",
-      success: "Registration submitted! Waiting for blockchain confirmation...",
-      error: "Failed to register as candidate",
-      confirmed: "Your candidate registration has been confirmed!",
-    });
+    return execute(
+      [name, dateOfBirthEpoch, gender, presentAddress, email, qualifications, manifesto],
+      {
+        loading: "Submitting candidate registration...",
+        success: "Registration submitted! Waiting for blockchain confirmation...",
+        error: "Failed to register as candidate",
+        confirmed: "Your candidate registration has been confirmed!",
+      },
+    );
   };
 
   return {
@@ -155,12 +158,15 @@ export function useUpdateCandidate() {
     qualifications,
     manifesto,
   }: CandidateContractParams) => {
-    return execute([name, dateOfBirthEpoch, gender, presentAddress, email, qualifications, manifesto], {
-      loading: "Updating candidate information...",
-      success: "Update submitted! Waiting for blockchain confirmation...",
-      error: "Failed to update candidate information",
-      confirmed: "Your candidate information has been updated successfully!",
-    });
+    return execute(
+      [name, dateOfBirthEpoch, gender, presentAddress, email, qualifications, manifesto],
+      {
+        loading: "Updating candidate information...",
+        success: "Update submitted! Waiting for blockchain confirmation...",
+        error: "Failed to update candidate information",
+        confirmed: "Your candidate information has been updated successfully!",
+      },
+    );
   };
 
   return {
@@ -195,11 +201,11 @@ export function useDeleteCandidate() {
 }
 
 // Candidate Information Reading
-export function useGetMyCandidateDetails() {
+export function useGetMyDetails() {
   const { data, isLoading, isError, refetch } =
     useCandidateDatabaseReadFunction<
       [string, bigint, Gender, string, string, string, string, bigint]
-    >("getMyCandidateDetails");
+    >("getMyDetails");
 
   const formattedData: CandidateDetails | undefined = data
     ? {
@@ -222,7 +228,7 @@ export function useGetMyCandidateDetails() {
   };
 }
 
-export function useGetCandidateDetails(candidateAddress: `0x${string}` | undefined) {
+export function useGetCandidateDetails(candidateAddress: Address | undefined) {
   const { data, isLoading, isError, refetch } = useCandidateDatabaseReadFunction<
     [string, bigint, Gender, string, string, string, string, bigint]
   >("getCandidateDetails", candidateAddress ? [candidateAddress] : undefined);
@@ -261,7 +267,7 @@ export function useGetMyRegistrationStatus() {
   };
 }
 
-export function useGetCandidateRegistrationStatus(candidateAddress: `0x${string}` | undefined) {
+export function useGetCandidateRegistrationStatus(candidateAddress: Address | undefined) {
   const { data, isLoading, isError, refetch } = useCandidateDatabaseReadFunction<boolean>(
     "getCandidateRegistrationStatus",
     candidateAddress ? [candidateAddress] : undefined,
@@ -293,7 +299,7 @@ export function useAdminAddCandidate() {
     useCandidateDatabaseWriteFunction("adminAddCandidate");
 
   const adminAddCandidate = async (
-    candidateAddress: `0x${string}`,
+    candidateAddress: Address,
     {
       name,
       dateOfBirthEpoch,
@@ -330,7 +336,7 @@ export function useAdminUpdateCandidate() {
     useCandidateDatabaseWriteFunction("adminUpdateCandidate");
 
   const adminUpdateCandidate = async (
-    candidateAddress: `0x${string}`,
+    candidateAddress: Address,
     {
       name,
       dateOfBirthEpoch,
@@ -366,7 +372,7 @@ export function useAdminRemoveCandidate() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
     useCandidateDatabaseWriteFunction("adminRemoveCandidate");
 
-  const adminRemoveCandidate = async (candidateAddress: `0x${string}`) => {
+  const adminRemoveCandidate = async (candidateAddress: Address) => {
     return execute([candidateAddress]);
   };
 
@@ -394,7 +400,7 @@ export function useGetCandidateCount() {
 
 export function useGetAllCandidates() {
   const { data, isLoading, isError, refetch } =
-    useCandidateDatabaseReadFunction<`0x${string}`[]>("getAllCandidates");
+    useCandidateDatabaseReadFunction<Address[]>("getAllCandidates");
 
   return {
     candidates: data,
@@ -409,7 +415,7 @@ export function useAddAdmin() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
     useCandidateDatabaseWriteFunction("addAdmin");
 
-  const addAdmin = async (adminAddress: `0x${string}`) => {
+  const addAdmin = async (adminAddress: Address) => {
     return execute([adminAddress]);
   };
 
@@ -426,7 +432,7 @@ export function useRemoveAdmin() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
     useCandidateDatabaseWriteFunction("removeAdmin");
 
-  const removeAdmin = async (adminAddress: `0x${string}`) => {
+  const removeAdmin = async (adminAddress: Address) => {
     return execute([adminAddress]);
   };
 
@@ -441,7 +447,7 @@ export function useRemoveAdmin() {
 
 export function useGetAllAdmins() {
   const { data, isLoading, isError, refetch } =
-    useCandidateDatabaseReadFunction<`0x${string}`[]>("getAllAdmins");
+    useCandidateDatabaseReadFunction<Address[]>("getAllAdmins");
 
   return {
     admins: data,
@@ -466,7 +472,7 @@ export function useGetAdminCount() {
 // Additional utility hooks
 export function useGetOwner() {
   const { data, isLoading, isError, refetch } =
-    useCandidateDatabaseReadFunction<`0x${string}`>("getOwner");
+    useCandidateDatabaseReadFunction<Address>("getOwner");
 
   return {
     owner: data,
@@ -476,24 +482,14 @@ export function useGetOwner() {
   };
 }
 
-export function useIsAdmin(address: `0x${string}` | undefined) {
-  const { data, isLoading, isError, refetch } =
-    useCandidateDatabaseReadFunction<boolean>("isAdmin", address ? [address] : undefined);
+export function useIsAdmin(address: Address | undefined) {
+  const { data, isLoading, isError, refetch } = useCandidateDatabaseReadFunction<boolean>(
+    "isAdmin",
+    address ? [address] : undefined,
+  );
 
   return {
     isAdmin: data,
-    isLoading,
-    isError,
-    refetch,
-  };
-}
-
-export function useCalculateAge(dateOfBirthEpoch: bigint | undefined) {
-  const { data, isLoading, isError, refetch } =
-    useCandidateDatabaseReadFunction<bigint>("calculateAge", dateOfBirthEpoch ? [dateOfBirthEpoch] : undefined);
-
-  return {
-    age: data,
     isLoading,
     isError,
     refetch,
@@ -517,10 +513,7 @@ export function useAdminImportCandidate() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
     useCandidateDatabaseWriteFunction("adminImportCandidate");
 
-  const adminImportCandidate = async (
-    sourceContract: `0x${string}`,
-    candidateAddress: `0x${string}`,
-  ) => {
+  const adminImportCandidate = async (sourceContract: Address, candidateAddress: Address) => {
     return execute([sourceContract, candidateAddress]);
   };
 
@@ -538,8 +531,8 @@ export function useAdminBatchImportCandidates() {
     useCandidateDatabaseWriteFunction("adminBatchImportCandidates");
 
   const adminBatchImportCandidates = async (
-    sourceContract: `0x${string}`,
-    candidateAddresses: `0x${string}`[],
+    sourceContract: Address,
+    candidateAddresses: Address[],
   ) => {
     return execute([sourceContract, candidateAddresses]);
   };
@@ -557,7 +550,7 @@ export function useAdminImportAllCandidates() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
     useCandidateDatabaseWriteFunction("adminImportAllCandidates");
 
-  const adminImportAllCandidates = async (sourceContract: `0x${string}`) => {
+  const adminImportAllCandidates = async (sourceContract: Address) => {
     return execute([sourceContract]);
   };
 

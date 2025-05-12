@@ -1,4 +1,4 @@
-import { Abi } from "viem";
+import { Abi, Address } from "viem";
 
 export type NavLink = {
   href: string;
@@ -23,6 +23,7 @@ export type VoterContractParams = {
   dateOfBirthEpoch: bigint;
   gender: Gender;
   presentAddress: string;
+  email: string;
 };
 
 export type VoterDetails = {
@@ -30,8 +31,9 @@ export type VoterDetails = {
   dateOfBirthEpoch: bigint;
   gender: Gender;
   presentAddress: string;
-  hasVoted: boolean;
-  timeWhenRegisteredEpoch?: bigint;
+  email: string;
+  timesVoted: bigint;
+  registrationTimestamp: bigint;
 };
 
 export type CandidateDetails = {
@@ -53,4 +55,13 @@ export type CandidateContractParams = {
   email: string;
   qualifications: string;
   manifesto: string;
+};
+
+export type ElectionDetails = {
+  name: string;
+  description: string;
+  isActive: boolean;
+  candidates: Address[];
+  totalVotes: bigint;
+  registrationTimestamp: bigint;
 };

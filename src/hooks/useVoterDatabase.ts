@@ -8,14 +8,14 @@ import {
   useWriteContract,
 } from "wagmi";
 import { useEffect, useState } from "react";
-import { ContractFunctionArgs } from "viem";
+import { Address, ContractFunctionArgs, Hash } from "viem";
 import { Gender, VoterContractParams, VoterDetails } from "@/types";
 
 // CORE HOOKS FOR READ AND WRITE OPERATIONS
 export function useVoterDatabaseWriteFunction(functionName: string) {
   const { address } = useAccount();
   const { writeContractAsync, isPending } = useWriteContract();
-  const [hash, setHash] = useState<`0x${string}` | undefined>(undefined);
+  const [hash, setHash] = useState<Hash | undefined>(undefined);
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash,
@@ -116,8 +116,14 @@ export function useAddVoter() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
     useVoterDatabaseWriteFunction("addVoter");
 
-  const addVoter = async ({ name, dateOfBirthEpoch, gender, presentAddress }: VoterContractParams) => {
-    return execute([name, dateOfBirthEpoch, gender, presentAddress], {
+  const addVoter = async ({
+    name,
+    dateOfBirthEpoch,
+    gender,
+    presentAddress,
+    email,
+  }: VoterContractParams) => {
+    return execute([name, dateOfBirthEpoch, gender, presentAddress, email], {
       loading: "Submitting voter registration...",
       success: "Registration submitted! Waiting for blockchain confirmation...",
       error: "Failed to register as voter",
@@ -138,8 +144,14 @@ export function useUpdateVoter() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
     useVoterDatabaseWriteFunction("updateVoter");
 
-  const updateVoter = async ({ name, dateOfBirthEpoch, gender, presentAddress }: VoterContractParams) => {
-    return execute([name, dateOfBirthEpoch, gender, presentAddress], {
+  const updateVoter = async ({
+    name,
+    dateOfBirthEpoch,
+    gender,
+    presentAddress,
+    email,
+  }: VoterContractParams) => {
+    return execute([name, dateOfBirthEpoch, gender, presentAddress, email], {
       loading: "Updating voter information...",
       success: "Update submitted! Waiting for blockchain confirmation...",
       error: "Failed to update voter information",
@@ -198,7 +210,9 @@ export function useMarkVoted() {
 // Voter Information Reading
 export function useGetMyDetails() {
   const { data, isLoading, isError, refetch } =
-    useVoterDatabaseReadFunction<[string, bigint, Gender, string, boolean]>("getMyDetails");
+    useVoterDatabaseReadFunction<[string, bigint, Gender, string, string, bigint, bigint]>(
+      "getMyDetails",
+    );
 
   const formattedData: VoterDetails | undefined = data
     ? {
@@ -206,7 +220,9 @@ export function useGetMyDetails() {
         dateOfBirthEpoch: data[1],
         gender: data[2],
         presentAddress: data[3],
-        hasVoted: data[4],
+        email: data[4],
+        timesVoted: data[5],
+        registrationTimestamp: data[6],
       }
     : undefined;
 
@@ -260,11 +276,19 @@ export function useAdminAddVoter() {
     useVoterDatabaseWriteFunction("adminAddVoter");
 
   const adminAddVoter = async (
-    voterAddress: `0x${string}`,
-    { name, dateOfBirthEpoch, gender, presentAddress }: VoterContractParams,
-    hasVoted: boolean = false,
+    voterAddress: Address,
+    { name, dateOfBirthEpoch, gender, presentAddress, email }: VoterContractParams,
+    timesVoted: number = 0,
   ) => {
-    return execute([voterAddress, name, dateOfBirthEpoch, gender, presentAddress, hasVoted]);
+    return execute([
+      voterAddress,
+      name,
+      dateOfBirthEpoch,
+      gender,
+      presentAddress,
+      email,
+      timesVoted,
+    ]);
   };
 
   return {
@@ -281,11 +305,19 @@ export function useAdminUpdateVoter() {
     useVoterDatabaseWriteFunction("adminUpdateVoter");
 
   const adminUpdateVoter = async (
-    voterAddress: `0x${string}`,
-    { name, dateOfBirthEpoch, gender, presentAddress }: VoterContractParams,
-    hasVoted: boolean,
+    voterAddress: Address,
+    { name, dateOfBirthEpoch, gender, presentAddress, email }: VoterContractParams,
+    timesVoted: number,
   ) => {
-    return execute([voterAddress, name, dateOfBirthEpoch, gender, presentAddress, hasVoted]);
+    return execute([
+      voterAddress,
+      name,
+      dateOfBirthEpoch,
+      gender,
+      presentAddress,
+      email,
+      timesVoted,
+    ]);
   };
 
   return {
@@ -301,7 +333,7 @@ export function useAdminRemoveVoter() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
     useVoterDatabaseWriteFunction("adminRemoveVoter");
 
-  const adminRemoveVoter = async (voterAddress: `0x${string}`) => {
+  const adminRemoveVoter = async (voterAddress: Address) => {
     return execute([voterAddress]);
   };
 
@@ -314,16 +346,16 @@ export function useAdminRemoveVoter() {
   };
 }
 
-export function useAdminSetVotingStatus() {
+export function useAdminMarkVoted() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
-    useVoterDatabaseWriteFunction("adminSetVotingStatus");
+    useVoterDatabaseWriteFunction("adminMarkVoted");
 
-  const adminSetVotingStatus = async (voterAddress: `0x${string}`, hasVoted: boolean) => {
-    return execute([voterAddress, hasVoted]);
+  const adminMarkVoted = async (voterAddress: Address) => {
+    return execute([voterAddress]);
   };
 
   return {
-    adminSetVotingStatus,
+    adminMarkVoted,
     isPending,
     isConfirming,
     isConfirmed,
@@ -332,9 +364,9 @@ export function useAdminSetVotingStatus() {
 }
 
 // Admin Data Reading
-export function useAdminGetVoterDetails(voterAddress: `0x${string}` | undefined) {
+export function useAdminGetVoterDetails(voterAddress: Address | undefined) {
   const { data, isLoading, isError, refetch } = useVoterDatabaseReadFunction<
-    [string, bigint, Gender, string, boolean, bigint]
+    [string, bigint, Gender, string, string, bigint, bigint]
   >("adminGetVoterDetails", voterAddress ? [voterAddress] : undefined);
 
   const formattedData: VoterDetails | undefined = data
@@ -343,8 +375,9 @@ export function useAdminGetVoterDetails(voterAddress: `0x${string}` | undefined)
         dateOfBirthEpoch: data[1],
         gender: data[2],
         presentAddress: data[3],
-        hasVoted: data[4],
-        timeWhenRegisteredEpoch: data[5],
+        email: data[4],
+        timesVoted: data[5],
+        registrationTimestamp: data[6],
       }
     : undefined;
 
@@ -370,10 +403,23 @@ export function useAdminGetVoterCount() {
 
 export function useAdminGetAllVoters() {
   const { data, isLoading, isError, refetch } =
-    useVoterDatabaseReadFunction<`0x${string}`[]>("adminGetAllVoters");
+    useVoterDatabaseReadFunction<Address[]>("adminGetAllVoters");
 
   return {
     voters: data,
+    isLoading,
+    isError,
+    refetch,
+  };
+}
+
+export function useAdminGetRegistrationStatus() {
+  const { data, isLoading, isError, refetch } = useVoterDatabaseReadFunction<boolean>(
+    "adminGetRegistrationStatus",
+  );
+
+  return {
+    isRegistered: data,
     isLoading,
     isError,
     refetch,
@@ -385,7 +431,7 @@ export function useAddAdmin() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
     useVoterDatabaseWriteFunction("addAdmin");
 
-  const addAdmin = async (adminAddress: `0x${string}`) => {
+  const addAdmin = async (adminAddress: Address) => {
     return execute([adminAddress]);
   };
 
@@ -402,7 +448,7 @@ export function useRemoveAdmin() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
     useVoterDatabaseWriteFunction("removeAdmin");
 
-  const removeAdmin = async (adminAddress: `0x${string}`) => {
+  const removeAdmin = async (adminAddress: Address) => {
     return execute([adminAddress]);
   };
 
@@ -417,7 +463,7 @@ export function useRemoveAdmin() {
 
 export function useGetAllAdmins() {
   const { data, isLoading, isError, refetch } =
-    useVoterDatabaseReadFunction<`0x${string}`[]>("getAllAdmins");
+    useVoterDatabaseReadFunction<Address[]>("getAllAdmins");
 
   return {
     admins: data,
@@ -429,8 +475,7 @@ export function useGetAllAdmins() {
 
 // Additional utility hooks
 export function useGetOwner() {
-  const { data, isLoading, isError, refetch } =
-    useVoterDatabaseReadFunction<`0x${string}`>("getOwner");
+  const { data, isLoading, isError, refetch } = useVoterDatabaseReadFunction<Address>("getOwner");
 
   return {
     owner: data,
@@ -440,9 +485,11 @@ export function useGetOwner() {
   };
 }
 
-export function useIsAdmin(address: `0x${string}` | undefined) {
-  const { data, isLoading, isError, refetch } =
-    useVoterDatabaseReadFunction<boolean>("isAdmin", address ? [address] : undefined);
+export function useIsAdmin(address: Address | undefined) {
+  const { data, isLoading, isError, refetch } = useVoterDatabaseReadFunction<boolean>(
+    "isAdmin",
+    address ? [address] : undefined,
+  );
 
   return {
     isAdmin: data,
@@ -452,21 +499,8 @@ export function useIsAdmin(address: `0x${string}` | undefined) {
   };
 }
 
-export function useCalculateAge(dateOfBirthEpoch: bigint | undefined) {
-  const { data, isLoading, isError, refetch } =
-    useVoterDatabaseReadFunction<bigint>("calculateAge", dateOfBirthEpoch ? [dateOfBirthEpoch] : undefined);
-
-  return {
-    age: data,
-    isLoading,
-    isError,
-    refetch,
-  };
-}
-
 export function useGetMyAge() {
-  const { data, isLoading, isError, refetch } =
-    useVoterDatabaseReadFunction<bigint>("getMyAge");
+  const { data, isLoading, isError, refetch } = useVoterDatabaseReadFunction<bigint>("getMyAge");
 
   return {
     age: data,
@@ -481,7 +515,7 @@ export function useAdminImportVoter() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
     useVoterDatabaseWriteFunction("adminImportVoter");
 
-  const adminImportVoter = async (sourceContract: `0x${string}`, voterAddress: `0x${string}`) => {
+  const adminImportVoter = async (sourceContract: Address, voterAddress: Address) => {
     return execute([sourceContract, voterAddress]);
   };
 
@@ -498,10 +532,7 @@ export function useAdminBatchImportVoters() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
     useVoterDatabaseWriteFunction("adminBatchImportVoters");
 
-  const adminBatchImportVoters = async (
-    sourceContract: `0x${string}`,
-    voterAddresses: `0x${string}`[],
-  ) => {
+  const adminBatchImportVoters = async (sourceContract: Address, voterAddresses: Address[]) => {
     return execute([sourceContract, voterAddresses]);
   };
 
@@ -518,7 +549,7 @@ export function useAdminImportAllVoters() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
     useVoterDatabaseWriteFunction("adminImportAllVoters");
 
-  const adminImportAllVoters = async (sourceContract: `0x${string}`) => {
+  const adminImportAllVoters = async (sourceContract: Address) => {
     return execute([sourceContract]);
   };
 

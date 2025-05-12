@@ -8,14 +8,14 @@ import {
   useWriteContract,
 } from "wagmi";
 import { useEffect, useState } from "react";
-import { ContractFunctionArgs } from "viem";
-import { Gender, VoterContractParams, VoterDetails } from "@/types";
+import { Address, ContractFunctionArgs, Hash } from "viem";
+import { ElectionDetails } from "@/types";
 
 // CORE HOOKS FOR READ AND WRITE OPERATIONS
 export function useElectionDatabaseWriteFunction(functionName: string) {
   const { address } = useAccount();
   const { writeContractAsync, isPending } = useWriteContract();
-  const [hash, setHash] = useState<`0x${string}` | undefined>(undefined);
+  const [hash, setHash] = useState<Hash | undefined>(undefined);
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
     hash,
@@ -111,22 +111,22 @@ export function useElectionDatabaseReadFunction<T>(
   };
 }
 
-// Voter Management Operations
-export function useAddVoter() {
+// Admin Functions - Election Management
+export function useAdminCreateElection() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
-    useElectionDatabaseWriteFunction("addVoter");
+    useElectionDatabaseWriteFunction("adminCreateElection");
 
-  const addVoter = async ({ name, dateOfBirthEpoch, gender, presentAddress }: VoterContractParams) => {
-    return execute([name, dateOfBirthEpoch, gender, presentAddress], {
-      loading: "Submitting voter registration...",
-      success: "Registration submitted! Waiting for blockchain confirmation...",
-      error: "Failed to register as voter",
-      confirmed: "Your voter registration has been confirmed!",
+  const adminCreateElection = async (name: string, description: string) => {
+    return execute([name, description], {
+      loading: "Creating election...",
+      success: "Election created! Waiting for blockchain confirmation...",
+      error: "Failed to create election",
+      confirmed: "Election has been created successfully!",
     });
   };
 
   return {
-    addVoter,
+    adminCreateElection,
     isPending,
     isConfirming,
     isConfirmed,
@@ -134,21 +134,21 @@ export function useAddVoter() {
   };
 }
 
-export function useUpdateVoter() {
+export function useAdminUpdateElection() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
-    useElectionDatabaseWriteFunction("updateVoter");
+    useElectionDatabaseWriteFunction("adminUpdateElection");
 
-  const updateVoter = async ({ name, dateOfBirthEpoch, gender, presentAddress }: VoterContractParams) => {
-    return execute([name, dateOfBirthEpoch, gender, presentAddress], {
-      loading: "Updating voter information...",
-      success: "Update submitted! Waiting for blockchain confirmation...",
-      error: "Failed to update voter information",
-      confirmed: "Your voter information has been updated successfully!",
+  const adminUpdateElection = async (electionId: bigint, name: string, description: string) => {
+    return execute([electionId, name, description], {
+      loading: "Updating election...",
+      success: "Election updated! Waiting for blockchain confirmation...",
+      error: "Failed to update election",
+      confirmed: "Election has been updated successfully!",
     });
   };
 
   return {
-    updateVoter,
+    adminUpdateElection,
     isPending,
     isConfirming,
     isConfirmed,
@@ -156,21 +156,21 @@ export function useUpdateVoter() {
   };
 }
 
-export function useDeleteVoter() {
+export function useAdminDeleteElection() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
-    useElectionDatabaseWriteFunction("deleteVoter");
+    useElectionDatabaseWriteFunction("adminDeleteElection");
 
-  const deleteVoter = async () => {
-    return execute([], {
-      loading: "Cancelling voter registration...",
-      success: "Cancellation submitted! Waiting for blockchain confirmation...",
-      error: "Failed to cancel voter registration",
-      confirmed: "Your voter registration has been cancelled successfully!",
+  const adminDeleteElection = async (electionId: bigint) => {
+    return execute([electionId], {
+      loading: "Deleting election...",
+      success: "Election deleted! Waiting for blockchain confirmation...",
+      error: "Failed to delete election",
+      confirmed: "Election has been deleted successfully!",
     });
   };
 
   return {
-    deleteVoter,
+    adminDeleteElection,
     isPending,
     isConfirming,
     isConfirmed,
@@ -178,21 +178,155 @@ export function useDeleteVoter() {
   };
 }
 
-export function useMarkVoted() {
+export function useAdminOpenElection() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
-    useElectionDatabaseWriteFunction("markVoted");
+    useElectionDatabaseWriteFunction("adminOpenElection");
 
-  const markVoted = async () => {
-    return execute([], {
-      loading: "Recording your vote...",
-      success: "Vote recorded! Waiting for blockchain confirmation...",
-      error: "Failed to record your vote",
+  const adminOpenElection = async (electionId: bigint) => {
+    return execute([electionId], {
+      loading: "Opening election for voting...",
+      success: "Election opened! Waiting for blockchain confirmation...",
+      error: "Failed to open election",
+      confirmed: "Election has been opened for voting successfully!",
+    });
+  };
+
+  return {
+    adminOpenElection,
+    isPending,
+    isConfirming,
+    isConfirmed,
+    hash,
+  };
+}
+
+export function useAdminCloseElection() {
+  const { execute, isPending, isConfirming, isConfirmed, hash } =
+    useElectionDatabaseWriteFunction("adminCloseElection");
+
+  const adminCloseElection = async (electionId: bigint) => {
+    return execute([electionId], {
+      loading: "Closing election...",
+      success: "Election closed! Waiting for blockchain confirmation...",
+      error: "Failed to close election",
+      confirmed: "Election has been closed successfully!",
+    });
+  };
+
+  return {
+    adminCloseElection,
+    isPending,
+    isConfirming,
+    isConfirmed,
+    hash,
+  };
+}
+
+// Candidate Management
+export function useEnrollCandidate() {
+  const { execute, isPending, isConfirming, isConfirmed, hash } =
+    useElectionDatabaseWriteFunction("enrollCandidate");
+
+  const enrollCandidate = async (electionId: bigint) => {
+    return execute([electionId], {
+      loading: "Enrolling as candidate...",
+      success: "Enrollment submitted! Waiting for blockchain confirmation...",
+      error: "Failed to enroll as candidate",
+      confirmed: "You have been enrolled as a candidate successfully!",
+    });
+  };
+
+  return {
+    enrollCandidate,
+    isPending,
+    isConfirming,
+    isConfirmed,
+    hash,
+  };
+}
+
+export function useWithdrawCandidate() {
+  const { execute, isPending, isConfirming, isConfirmed, hash } =
+    useElectionDatabaseWriteFunction("withdrawCandidate");
+
+  const withdrawCandidate = async (electionId: bigint) => {
+    return execute([electionId], {
+      loading: "Withdrawing candidacy...",
+      success: "Withdrawal submitted! Waiting for blockchain confirmation...",
+      error: "Failed to withdraw candidacy",
+      confirmed: "Your candidacy has been withdrawn successfully!",
+    });
+  };
+
+  return {
+    withdrawCandidate,
+    isPending,
+    isConfirming,
+    isConfirmed,
+    hash,
+  };
+}
+
+export function useAdminEnrollCandidate() {
+  const { execute, isPending, isConfirming, isConfirmed, hash } =
+    useElectionDatabaseWriteFunction("adminEnrollCandidate");
+
+  const adminEnrollCandidate = async (electionId: bigint, candidateAddress: Address) => {
+    return execute([electionId, candidateAddress], {
+      loading: "Enrolling candidate...",
+      success: "Candidate enrolled! Waiting for blockchain confirmation...",
+      error: "Failed to enroll candidate",
+      confirmed: "Candidate has been enrolled successfully!",
+    });
+  };
+
+  return {
+    adminEnrollCandidate,
+    isPending,
+    isConfirming,
+    isConfirmed,
+    hash,
+  };
+}
+
+export function useAdminWithdrawCandidate() {
+  const { execute, isPending, isConfirming, isConfirmed, hash } =
+    useElectionDatabaseWriteFunction("adminWithdrawCandidate");
+
+  const adminWithdrawCandidate = async (electionId: bigint, candidateAddress: Address) => {
+    return execute([electionId, candidateAddress], {
+      loading: "Removing candidate...",
+      success: "Candidate removed! Waiting for blockchain confirmation...",
+      error: "Failed to remove candidate",
+      confirmed: "Candidate has been removed successfully!",
+    });
+  };
+
+  return {
+    adminWithdrawCandidate,
+    isPending,
+    isConfirming,
+    isConfirmed,
+    hash,
+  };
+}
+
+// Voting
+export function useVote() {
+  const { execute, isPending, isConfirming, isConfirmed, hash } =
+    useElectionDatabaseWriteFunction("vote");
+
+  const vote = async (electionId: bigint, candidateAddress: Address) => {
+    return execute([electionId, candidateAddress], {
+      loading: "Submitting your vote...",
+      success: "Vote submitted! Waiting for blockchain confirmation...",
+      error: "Failed to submit vote",
       confirmed: "Your vote has been recorded successfully!",
     });
   };
 
   return {
-    markVoted,
+    vote,
     isPending,
     isConfirming,
     isConfirmed,
@@ -200,46 +334,133 @@ export function useMarkVoted() {
   };
 }
 
-// Voter Information Reading
-export function useGetMyDetails() {
-  const { data, isLoading, isError, refetch } =
-    useElectionDatabaseReadFunction<[string, bigint, Gender, string, boolean, bigint]>("getMyDetails");
+// Election Information Reading
+export function useGetElectionStatus(electionId: bigint | undefined) {
+  const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<boolean>(
+    "getElectionStatus",
+    electionId ? [electionId] : undefined,
+  );
 
-  const formattedData: VoterDetails | undefined = data
+  return {
+    isActive: data,
+    isLoading,
+    isError,
+    refetch,
+  };
+}
+
+export function useGetElectionDetails(electionId: bigint | undefined) {
+  const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<
+    [string, string, boolean, Address[], bigint, bigint]
+  >("getElectionDetails", electionId ? [electionId] : undefined);
+
+  const formattedData: ElectionDetails | undefined = data
     ? {
         name: data[0],
-        dateOfBirthEpoch: data[1],
-        gender: data[2],
-        presentAddress: data[3],
-        hasVoted: data[4],
-        timeWhenRegisteredEpoch: data[5],
+        description: data[1],
+        isActive: data[2],
+        candidates: data[3],
+        totalVotes: data[4],
+        registrationTimestamp: data[5],
       }
     : undefined;
 
   return {
-    voterDetails: formattedData,
+    electionDetails: formattedData,
     isLoading,
     isError,
     refetch,
   };
 }
 
-export function useGetMyRegistrationStatus() {
-  const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<boolean>(
-    "getMyRegistrationStatus",
+export function useGetElectionCount() {
+  const { data, isLoading, isError, refetch } =
+    useElectionDatabaseReadFunction<bigint>("getElectionCount");
+
+  return {
+    electionCount: data,
+    isLoading,
+    isError,
+    refetch,
+  };
+}
+
+export function useGetAllElectionIds() {
+  const { data, isLoading, isError, refetch } =
+    useElectionDatabaseReadFunction<bigint[]>("getAllElectionIds");
+
+  return {
+    electionIds: data,
+    isLoading,
+    isError,
+    refetch,
+  };
+}
+
+export function useGetRegisteredCandidates(electionId: bigint | undefined) {
+  const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<Address[]>(
+    "getRegisteredCandidates",
+    electionId ? [electionId] : undefined,
   );
 
   return {
-    isRegistered: data,
+    candidates: data,
     isLoading,
     isError,
     refetch,
   };
 }
 
-export function useGetMyVotingStatus() {
-  const { data, isLoading, isError, refetch } =
-    useElectionDatabaseReadFunction<boolean>("getMyVotingStatus");
+export function useGetVotesOfCandidate(
+  electionId: bigint | undefined,
+  candidateAddress: Address | undefined,
+) {
+  const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<bigint>(
+    "getVotesOfCandidate",
+    electionId && candidateAddress ? [electionId, candidateAddress] : undefined,
+  );
+
+  return {
+    votes: data,
+    isLoading,
+    isError,
+    refetch,
+  };
+}
+
+export function useGetTotalVoteCount(electionId: bigint | undefined) {
+  const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<bigint>(
+    "getTotalVoteCount",
+    electionId ? [electionId] : undefined,
+  );
+
+  return {
+    totalVotes: data,
+    isLoading,
+    isError,
+    refetch,
+  };
+}
+
+export function useGetWinner(electionId: bigint | undefined) {
+  const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<Address>(
+    "getWinner",
+    electionId ? [electionId] : undefined,
+  );
+
+  return {
+    winner: data,
+    isLoading,
+    isError,
+    refetch,
+  };
+}
+
+export function useHasVoted(electionId: bigint | undefined, voterAddress: Address | undefined) {
+  const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<boolean>(
+    "hasVoted",
+    electionId && voterAddress ? [electionId, voterAddress] : undefined,
+  );
 
   return {
     hasVoted: data,
@@ -249,158 +470,34 @@ export function useGetMyVotingStatus() {
   };
 }
 
-// Admin Functions
-export function useAmIAdmin() {
-  const { data, isLoading, isError, refetch } =
-    useElectionDatabaseReadFunction<boolean>("amIAdmin");
+export function useGetVoteTimestamp(
+  electionId: bigint | undefined,
+  voterAddress: Address | undefined,
+) {
+  const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<bigint>(
+    "getVoteTimestamp",
+    electionId && voterAddress ? [electionId, voterAddress] : undefined,
+  );
 
   return {
-    isAdmin: data,
+    timestamp: data,
     isLoading,
     isError,
     refetch,
   };
 }
 
-export function useAdminAddVoter() {
-  const { execute, isPending, isConfirming, isConfirmed, hash } =
-    useElectionDatabaseWriteFunction("adminAddVoter");
-
-  const adminAddVoter = async (
-    voterAddress: `0x${string}`,
-    { name, dateOfBirthEpoch, gender, presentAddress }: VoterContractParams,
-    hasVoted: boolean = false,
-  ) => {
-    return execute([voterAddress, name, dateOfBirthEpoch, gender, presentAddress, hasVoted], {
-      loading: "Adding voter...",
-      success: "Voter added successfully! Waiting for blockchain confirmation...",
-      error: "Failed to add voter",
-      confirmed: "Voter has been added successfully!",
-    });
-  };
+export function useGetVoterChoice(
+  electionId: bigint | undefined,
+  voterAddress: Address | undefined,
+) {
+  const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<Address>(
+    "getVoterChoice",
+    electionId && voterAddress ? [electionId, voterAddress] : undefined,
+  );
 
   return {
-    adminAddVoter,
-    isPending,
-    isConfirming,
-    isConfirmed,
-    hash,
-  };
-}
-
-export function useAdminUpdateVoter() {
-  const { execute, isPending, isConfirming, isConfirmed, hash } =
-    useElectionDatabaseWriteFunction("adminUpdateVoter");
-
-  const adminUpdateVoter = async (
-    voterAddress: `0x${string}`,
-    { name, dateOfBirthEpoch, gender, presentAddress }: VoterContractParams,
-    hasVoted: boolean,
-  ) => {
-    return execute([voterAddress, name, dateOfBirthEpoch, gender, presentAddress, hasVoted], {
-      loading: "Updating voter information...",
-      success: "Voter information updated! Waiting for blockchain confirmation...",
-      error: "Failed to update voter information",
-      confirmed: "Voter information has been updated successfully!",
-    });
-  };
-
-  return {
-    adminUpdateVoter,
-    isPending,
-    isConfirming,
-    isConfirmed,
-    hash,
-  };
-}
-
-export function useAdminRemoveVoter() {
-  const { execute, isPending, isConfirming, isConfirmed, hash } =
-    useElectionDatabaseWriteFunction("adminRemoveVoter");
-
-  const adminRemoveVoter = async (voterAddress: `0x${string}`) => {
-    return execute([voterAddress], {
-      loading: "Removing voter...",
-      success: "Voter removed! Waiting for blockchain confirmation...",
-      error: "Failed to remove voter",
-      confirmed: "Voter has been removed successfully!",
-    });
-  };
-
-  return {
-    adminRemoveVoter,
-    isPending,
-    isConfirming,
-    isConfirmed,
-    hash,
-  };
-}
-
-export function useAdminSetVotingStatus() {
-  const { execute, isPending, isConfirming, isConfirmed, hash } =
-    useElectionDatabaseWriteFunction("adminSetVotingStatus");
-
-  const adminSetVotingStatus = async (voterAddress: `0x${string}`, hasVoted: boolean) => {
-    return execute([voterAddress, hasVoted], {
-      loading: "Updating voting status...",
-      success: "Voting status updated! Waiting for blockchain confirmation...",
-      error: "Failed to update voting status",
-      confirmed: "Voting status has been updated successfully!",
-    });
-  };
-
-  return {
-    adminSetVotingStatus,
-    isPending,
-    isConfirming,
-    isConfirmed,
-    hash,
-  };
-}
-
-// Admin Data Reading
-export function useAdminGetVoterDetails(voterAddress: `0x${string}` | undefined) {
-  const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<
-    [string, bigint, Gender, string, boolean, bigint]
-  >("adminGetVoterDetails", voterAddress ? [voterAddress] : undefined);
-
-  const formattedData: VoterDetails | undefined = data
-    ? {
-        name: data[0],
-        dateOfBirthEpoch: data[1],
-        gender: data[2],
-        presentAddress: data[3],
-        hasVoted: data[4],
-        timeWhenRegisteredEpoch: data[5],
-      }
-    : undefined;
-
-  return {
-    voterDetails: formattedData,
-    isLoading,
-    isError,
-    refetch,
-  };
-}
-
-export function useAdminGetVoterCount() {
-  const { data, isLoading, isError, refetch } =
-    useElectionDatabaseReadFunction<bigint>("adminGetVoterCount");
-
-  return {
-    voterCount: data,
-    isLoading,
-    isError,
-    refetch,
-  };
-}
-
-export function useAdminGetAllVoters() {
-  const { data, isLoading, isError, refetch } =
-    useElectionDatabaseReadFunction<`0x${string}`[]>("adminGetAllVoters");
-
-  return {
-    voters: data,
+    chosenCandidate: data,
     isLoading,
     isError,
     refetch,
@@ -412,7 +509,7 @@ export function useAddAdmin() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
     useElectionDatabaseWriteFunction("addAdmin");
 
-  const addAdmin = async (adminAddress: `0x${string}`) => {
+  const addAdmin = async (adminAddress: Address) => {
     return execute([adminAddress], {
       loading: "Adding admin...",
       success: "Admin added! Waiting for blockchain confirmation...",
@@ -434,7 +531,7 @@ export function useRemoveAdmin() {
   const { execute, isPending, isConfirming, isConfirmed, hash } =
     useElectionDatabaseWriteFunction("removeAdmin");
 
-  const removeAdmin = async (adminAddress: `0x${string}`) => {
+  const removeAdmin = async (adminAddress: Address) => {
     return execute([adminAddress], {
       loading: "Removing admin...",
       success: "Admin removed! Waiting for blockchain confirmation...",
@@ -454,7 +551,7 @@ export function useRemoveAdmin() {
 
 export function useGetAllAdmins() {
   const { data, isLoading, isError, refetch } =
-    useElectionDatabaseReadFunction<`0x${string}`[]>("getAllAdmins");
+    useElectionDatabaseReadFunction<Address[]>("getAllAdmins");
 
   return {
     admins: data,
@@ -479,7 +576,7 @@ export function useGetAdminCount() {
 // Additional utility hooks
 export function useGetOwner() {
   const { data, isLoading, isError, refetch } =
-    useElectionDatabaseReadFunction<`0x${string}`>("getOwner");
+    useElectionDatabaseReadFunction<Address>("getOwner");
 
   return {
     owner: data,
@@ -489,9 +586,11 @@ export function useGetOwner() {
   };
 }
 
-export function useIsAdmin(address: `0x${string}` | undefined) {
-  const { data, isLoading, isError, refetch } =
-    useElectionDatabaseReadFunction<boolean>("isAdmin", address ? [address] : undefined);
+export function useIsAdmin(address: Address | undefined) {
+  const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<boolean>(
+    "isAdmin",
+    address ? [address] : undefined,
+  );
 
   return {
     isAdmin: data,
@@ -501,96 +600,28 @@ export function useIsAdmin(address: `0x${string}` | undefined) {
   };
 }
 
-export function useCalculateAge(dateOfBirthEpoch: bigint | undefined) {
+export function useAmIAdmin() {
   const { data, isLoading, isError, refetch } =
-    useElectionDatabaseReadFunction<bigint>("calculateAge", dateOfBirthEpoch ? [dateOfBirthEpoch] : undefined);
+    useElectionDatabaseReadFunction<boolean>("amIAdmin");
 
   return {
-    age: data,
+    isAdmin: data,
     isLoading,
     isError,
     refetch,
   };
 }
 
-export function useGetMyAge() {
+// External Databases
+export function useGetDatabases() {
   const { data, isLoading, isError, refetch } =
-    useElectionDatabaseReadFunction<bigint>("getMyAge");
+    useElectionDatabaseReadFunction<[Address, Address]>("getDatabases");
 
   return {
-    age: data,
+    voterDB: data ? data[0] : undefined,
+    candidateDB: data ? data[1] : undefined,
     isLoading,
     isError,
     refetch,
-  };
-}
-
-// Data Import Functions
-export function useAdminImportVoter() {
-  const { execute, isPending, isConfirming, isConfirmed, hash } =
-    useElectionDatabaseWriteFunction("adminImportVoter");
-
-  const adminImportVoter = async (sourceContract: `0x${string}`, voterAddress: `0x${string}`) => {
-    return execute([sourceContract, voterAddress], {
-      loading: "Importing voter...",
-      success: "Voter imported! Waiting for blockchain confirmation...",
-      error: "Failed to import voter",
-      confirmed: "Voter has been imported successfully!",
-    });
-  };
-
-  return {
-    adminImportVoter,
-    isPending,
-    isConfirming,
-    isConfirmed,
-    hash,
-  };
-}
-
-export function useAdminBatchImportVoters() {
-  const { execute, isPending, isConfirming, isConfirmed, hash } =
-    useElectionDatabaseWriteFunction("adminBatchImportVoters");
-
-  const adminBatchImportVoters = async (
-    sourceContract: `0x${string}`,
-    voterAddresses: `0x${string}`[],
-  ) => {
-    return execute([sourceContract, voterAddresses], {
-      loading: "Batch importing voters...",
-      success: "Voters imported! Waiting for blockchain confirmation...",
-      error: "Failed to import voters",
-      confirmed: "Voters have been imported successfully!",
-    });
-  };
-
-  return {
-    adminBatchImportVoters,
-    isPending,
-    isConfirming,
-    isConfirmed,
-    hash,
-  };
-}
-
-export function useAdminImportAllVoters() {
-  const { execute, isPending, isConfirming, isConfirmed, hash } =
-    useElectionDatabaseWriteFunction("adminImportAllVoters");
-
-  const adminImportAllVoters = async (sourceContract: `0x${string}`) => {
-    return execute([sourceContract], {
-      loading: "Importing all voters...",
-      success: "All voters imported! Waiting for blockchain confirmation...",
-      error: "Failed to import all voters",
-      confirmed: "All voters have been imported successfully!",
-    });
-  };
-
-  return {
-    adminImportAllVoters,
-    isPending,
-    isConfirming,
-    isConfirmed,
-    hash,
   };
 }
