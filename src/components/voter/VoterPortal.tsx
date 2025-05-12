@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useGetMyRegistrationStatus } from "@/hooks/useVoterDatabase";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { PageHeader } from "@/components/common/PageHeader";
+import { LoadingView } from "@/components/common/LoadingView";
 import { VoterRegistration } from "@/components/voter/registration/VoterRegistration";
 import { VoterManagement } from "@/components/voter/management/VoterManagement";
 
@@ -43,7 +44,11 @@ export function VoterPortal() {
       />
 
       {isLoading ? (
-        <LoadingSpinner message="Checking your registration status..." />
+        // Use our reusable LoadingView component
+        <LoadingView 
+          message="Checking your registration status..." 
+          type="portal" 
+        />
       ) : isRegistered ? (
         <VoterManagement onRegistrationStatusChangeAction={handleRegistrationStatusChange} />
       ) : (

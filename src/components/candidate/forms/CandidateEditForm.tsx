@@ -17,6 +17,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { FormDatePickerControl } from "@/components/ui/custom/form-date-picker";
 import { Separator } from "@/components/ui/separator";
+import { FormSubmitLoader } from "@/components/common/FormSubmitLoader";
 
 import { useUpdateCandidate } from "@/hooks/useCandidateDatabase";
 import {
@@ -62,6 +63,13 @@ export function CandidateEditForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* Overlay loader for form submission */}
+        <FormSubmitLoader 
+          isPending={isPending}
+          isConfirming={isConfirming} 
+          message={isPending ? "Saving changes..." : "Confirming on blockchain..."}
+        />
+        
         <div>
           <h3 className="text-lg font-medium">Personal Information</h3>
           <p className="text-sm text-muted-foreground mb-4">

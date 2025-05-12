@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useGetMyDetails } from "@/hooks/useCandidateDatabase";
-import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { InfoIcon } from "lucide-react";
 import { CandidateOverview } from "./CandidateOverview";
 import { CandidateTabs } from "./CandidateTabs";
+import { LoadingView } from "@/components/common/LoadingView";
 
 interface CandidateManagementProps {
   onRegistrationStatusChangeAction: (status: boolean) => void;
@@ -35,7 +35,12 @@ export function CandidateManagement({
   }, [refetch]);
 
   if (isLoading) {
-    return <LoadingSpinner message="Loading your candidate information..." />;
+    return (
+      <LoadingView
+        message="Loading your candidate information..."
+        type="management"
+      />
+    );
   }
 
   if (isError || !candidateDetails) {

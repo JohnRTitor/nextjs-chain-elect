@@ -2,11 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useGetMyDetails } from "@/hooks/useVoterDatabase";
-import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { InfoIcon } from "lucide-react";
 import { VoterOverview } from "./VoterOverview";
 import { VoterTabs } from "./VoterTabs";
+import { LoadingView } from "@/components/common/LoadingView";
 
 interface VoterManagementProps {
   onRegistrationStatusChangeAction: (status: boolean) => void;
@@ -41,7 +41,12 @@ export function VoterManagement({ onRegistrationStatusChangeAction }: VoterManag
   const isError = detailsError;
 
   if (isLoading) {
-    return <LoadingSpinner message="Loading your voter information..." />;
+    return (
+      <LoadingView
+        message="Loading your voter information..."
+        type="management"
+      />
+    );
   }
 
   if (isError || !voterDetails) {

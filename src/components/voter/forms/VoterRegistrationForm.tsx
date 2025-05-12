@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { FormDatePickerControl } from "@/components/ui/custom/form-date-picker";
+import { FormSubmitLoader } from "@/components/common/FormSubmitLoader";
 
 import { useAddVoter } from "@/hooks/useVoterDatabase";
 import {
@@ -61,6 +62,13 @@ export function VoterRegistrationForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* Overlay loader for form submission */}
+        <FormSubmitLoader 
+          isPending={isPending}
+          isConfirming={isConfirming} 
+          message={isPending ? "Processing registration..." : "Confirming on blockchain..."}
+        />
+        
         <div className="grid gap-6 sm:grid-cols-2">
           <FormField
             control={form.control}
@@ -153,18 +161,23 @@ export function VoterRegistrationForm({
         />
 
         <div className="pt-4">
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isLoading || !form.formState.isValid}
-          >
-            {isLoading && <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />}
-            {isPending
-              ? "Submitting..."
-              : isConfirming
-                ? "Confirming..."
-                : "Register as Voter"}
-          </Button>
+          {isLoading ? (
+            <FormSubmitLoader 
+              isPending={isPending}
+              isConfirming={isConfirming}
+              variant="button"
+              buttonText="Register as Voter"
+              className="w-full"
+            />
+          ) : (
+            <Button
+              type="submit"
+              className="w-full"
+              disabled={!form.formState.isValid}
+            >
+              Register as Voter
+            </Button>
+          )}
         </div>
       </form>
     </Form>

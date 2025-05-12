@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useGetMyRegistrationStatus } from "@/hooks/useCandidateDatabase";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { PageHeader } from "@/components/common/PageHeader";
+import { LoadingView } from "@/components/common/LoadingView";
 import { CandidateRegistration } from "@/components/candidate/registration/CandidateRegistration";
 import { CandidateManagement } from "@/components/candidate/management/CandidateManagement";
 
@@ -42,7 +43,11 @@ export function CandidatePortal() {
       />
 
       {isLoading ? (
-        <LoadingSpinner message="Checking your registration status..." />
+        // Use our reusable LoadingView component
+        <LoadingView 
+          message="Checking your registration status..." 
+          type="portal" 
+        />
       ) : isRegistered ? (
         <CandidateManagement onRegistrationStatusChangeAction={handleRegistrationStatusChange} />
       ) : (

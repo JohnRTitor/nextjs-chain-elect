@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
 import { FormDatePickerControl } from "@/components/ui/custom/form-date-picker";
+import { FormSubmitLoader } from "@/components/common/FormSubmitLoader";
 
 import { useUpdateVoter } from "@/hooks/useVoterDatabase";
 import {
@@ -61,6 +62,13 @@ export function VoterUpdateForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        {/* Overlay loader for form submission */}
+        <FormSubmitLoader 
+          isPending={isPending}
+          isConfirming={isConfirming} 
+          message={isPending ? "Saving changes..." : "Confirming on blockchain..."}
+        />
+        
         <div>
           <div className="grid gap-4 sm:grid-cols-2">
             <FormField
