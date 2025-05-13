@@ -16,17 +16,29 @@ export function useElectionDatabaseWriteFunction(functionName: string) {
   const { address } = useAccount();
   const { writeContractAsync, isPending } = useWriteContract();
   const [hash, setHash] = useState<Hash | undefined>(undefined);
+  const [isInternalConfirmed, setIsInternalConfirmed] = useState(false);
 
-  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
   });
+  
+  // Store confirmation in local state to avoid infinite renders
+  useEffect(() => {
+    if (isSuccess && !isInternalConfirmed) {
+      // Use a timeout to ensure this happens in a separate render cycle
+      const timeoutId = setTimeout(() => {
+        setIsInternalConfirmed(true);
+      }, 0);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [isSuccess, isInternalConfirmed]);
 
   // Listen for transaction confirmation
   useEffect(() => {
-    if (isConfirmed && hash) {
+    if (isSuccess && hash) {
       toast.success("Transaction confirmed on the blockchain");
     }
-  }, [isConfirmed, hash]);
+  }, [isSuccess, hash]);
 
   const execute = async (
     args: ContractFunctionArgs = [],
@@ -81,12 +93,21 @@ export function useElectionDatabaseWriteFunction(functionName: string) {
     }
   };
 
+  // Create a more stable resetConfirmation function that won't cause render loops
+  const resetConfirmation = () => {
+    if (isInternalConfirmed) {
+      setHash(undefined); // Clear hash to avoid re-triggering transaction receipt watcher
+      setIsInternalConfirmed(false);
+    }
+  };
+
   return {
     execute,
     isPending,
     isConfirming,
-    isConfirmed,
+    isConfirmed: isInternalConfirmed,
     hash,
+    resetConfirmation,
   };
 }
 
@@ -113,7 +134,7 @@ export function useElectionDatabaseReadFunction<T>(
 
 // Admin Functions - Election Management
 export function useAdminCreateElection() {
-  const { execute, isPending, isConfirming, isConfirmed, hash } =
+  const { execute, isPending, isConfirming, isConfirmed, hash, resetConfirmation } =
     useElectionDatabaseWriteFunction("adminCreateElection");
 
   const adminCreateElection = async (name: string, description: string) => {
@@ -131,11 +152,12 @@ export function useAdminCreateElection() {
     isConfirming,
     isConfirmed,
     hash,
+    resetConfirmation,
   };
 }
 
 export function useAdminUpdateElection() {
-  const { execute, isPending, isConfirming, isConfirmed, hash } =
+  const { execute, isPending, isConfirming, isConfirmed, hash, resetConfirmation } =
     useElectionDatabaseWriteFunction("adminUpdateElection");
 
   const adminUpdateElection = async (electionId: bigint, name: string, description: string) => {
@@ -153,11 +175,12 @@ export function useAdminUpdateElection() {
     isConfirming,
     isConfirmed,
     hash,
+    resetConfirmation,
   };
 }
 
 export function useAdminDeleteElection() {
-  const { execute, isPending, isConfirming, isConfirmed, hash } =
+  const { execute, isPending, isConfirming, isConfirmed, hash, resetConfirmation } =
     useElectionDatabaseWriteFunction("adminDeleteElection");
 
   const adminDeleteElection = async (electionId: bigint) => {
@@ -175,11 +198,12 @@ export function useAdminDeleteElection() {
     isConfirming,
     isConfirmed,
     hash,
+    resetConfirmation,
   };
 }
 
 export function useAdminOpenElection() {
-  const { execute, isPending, isConfirming, isConfirmed, hash } =
+  const { execute, isPending, isConfirming, isConfirmed, hash, resetConfirmation } =
     useElectionDatabaseWriteFunction("adminOpenElection");
 
   const adminOpenElection = async (electionId: bigint) => {
@@ -197,11 +221,12 @@ export function useAdminOpenElection() {
     isConfirming,
     isConfirmed,
     hash,
+    resetConfirmation,
   };
 }
 
 export function useAdminCloseElection() {
-  const { execute, isPending, isConfirming, isConfirmed, hash } =
+  const { execute, isPending, isConfirming, isConfirmed, hash, resetConfirmation } =
     useElectionDatabaseWriteFunction("adminCloseElection");
 
   const adminCloseElection = async (electionId: bigint) => {
@@ -219,12 +244,13 @@ export function useAdminCloseElection() {
     isConfirming,
     isConfirmed,
     hash,
+    resetConfirmation,
   };
 }
 
 // Candidate Management
 export function useEnrollCandidate() {
-  const { execute, isPending, isConfirming, isConfirmed, hash } =
+  const { execute, isPending, isConfirming, isConfirmed, hash, resetConfirmation } =
     useElectionDatabaseWriteFunction("enrollCandidate");
 
   const enrollCandidate = async (electionId: bigint) => {
@@ -242,11 +268,12 @@ export function useEnrollCandidate() {
     isConfirming,
     isConfirmed,
     hash,
+    resetConfirmation,
   };
 }
 
 export function useWithdrawCandidate() {
-  const { execute, isPending, isConfirming, isConfirmed, hash } =
+  const { execute, isPending, isConfirming, isConfirmed, hash, resetConfirmation } =
     useElectionDatabaseWriteFunction("withdrawCandidate");
 
   const withdrawCandidate = async (electionId: bigint) => {
@@ -264,11 +291,12 @@ export function useWithdrawCandidate() {
     isConfirming,
     isConfirmed,
     hash,
+    resetConfirmation,
   };
 }
 
 export function useAdminEnrollCandidate() {
-  const { execute, isPending, isConfirming, isConfirmed, hash } =
+  const { execute, isPending, isConfirming, isConfirmed, hash, resetConfirmation } =
     useElectionDatabaseWriteFunction("adminEnrollCandidate");
 
   const adminEnrollCandidate = async (electionId: bigint, candidateAddress: Address) => {
@@ -286,11 +314,12 @@ export function useAdminEnrollCandidate() {
     isConfirming,
     isConfirmed,
     hash,
+    resetConfirmation,
   };
 }
 
 export function useAdminWithdrawCandidate() {
-  const { execute, isPending, isConfirming, isConfirmed, hash } =
+  const { execute, isPending, isConfirming, isConfirmed, hash, resetConfirmation } =
     useElectionDatabaseWriteFunction("adminWithdrawCandidate");
 
   const adminWithdrawCandidate = async (electionId: bigint, candidateAddress: Address) => {
@@ -308,12 +337,13 @@ export function useAdminWithdrawCandidate() {
     isConfirming,
     isConfirmed,
     hash,
+    resetConfirmation,
   };
 }
 
 // Voting
 export function useVote() {
-  const { execute, isPending, isConfirming, isConfirmed, hash } =
+  const { execute, isPending, isConfirming, isConfirmed, hash, resetConfirmation } =
     useElectionDatabaseWriteFunction("vote");
 
   const vote = async (electionId: bigint, candidateAddress: Address) => {
@@ -331,6 +361,7 @@ export function useVote() {
     isConfirming,
     isConfirmed,
     hash,
+    resetConfirmation,
   };
 }
 
@@ -506,7 +537,7 @@ export function useGetVoterChoice(
 
 // Admin Management
 export function useAddAdmin() {
-  const { execute, isPending, isConfirming, isConfirmed, hash } =
+  const { execute, isPending, isConfirming, isConfirmed, hash, resetConfirmation } =
     useElectionDatabaseWriteFunction("addAdmin");
 
   const addAdmin = async (adminAddress: Address) => {
@@ -524,11 +555,12 @@ export function useAddAdmin() {
     isConfirming,
     isConfirmed,
     hash,
+    resetConfirmation,
   };
 }
 
 export function useRemoveAdmin() {
-  const { execute, isPending, isConfirming, isConfirmed, hash } =
+  const { execute, isPending, isConfirming, isConfirmed, hash, resetConfirmation } =
     useElectionDatabaseWriteFunction("removeAdmin");
 
   const removeAdmin = async (adminAddress: Address) => {
@@ -546,6 +578,7 @@ export function useRemoveAdmin() {
     isConfirming,
     isConfirmed,
     hash,
+    resetConfirmation,
   };
 }
 

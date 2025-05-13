@@ -54,7 +54,7 @@ export function CreateElectionDialog({
   onOpenChangeAction,
   onSuccessAction,
 }: CreateElectionDialogProps) {
-  const { adminCreateElection, isPending, isConfirming, isConfirmed } = useAdminCreateElection();
+  const { adminCreateElection, isPending, isConfirming, isConfirmed, resetConfirmation } = useAdminCreateElection();
 
   // Form setup
   const form = useForm<CreateElectionFormValues>({
@@ -79,10 +79,15 @@ export function CreateElectionDialog({
   // Listen for successful creation
   useEffect(() => {
     if (isConfirmed) {
-      onSuccessAction();
-      onOpenChangeAction(false);
+      // Execute these in a single render cycle
+      const handleSuccess = async () => {
+        resetConfirmation(); // First reset the confirmation state
+        onSuccessAction(); // Then call success action
+        onOpenChangeAction(false); // Finally close the dialog
+      };
+      handleSuccess();
     }
-  }, [isConfirmed, onSuccessAction, onOpenChangeAction]);
+  }, [isConfirmed, onSuccessAction, onOpenChangeAction, resetConfirmation]);
 
   const onSubmit = async (values: CreateElectionFormValues) => {
     await adminCreateElection(values.name, values.description);

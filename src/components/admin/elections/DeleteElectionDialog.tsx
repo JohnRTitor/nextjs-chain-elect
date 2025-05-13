@@ -29,14 +29,19 @@ export function DeleteElectionDialog({
   onSuccessAction,
 }: DeleteElectionDialogProps) {
   const { electionDetails, isLoading } = useGetElectionDetails(electionId || undefined);
-  const { adminDeleteElection, isPending, isConfirming, isConfirmed } = useAdminDeleteElection();
+  const { adminDeleteElection, isPending, isConfirming, isConfirmed, resetConfirmation } = useAdminDeleteElection();
 
   // Listen for successful deletion
   useEffect(() => {
     if (isConfirmed) {
-      onSuccessAction();
+      // Execute these in a single render cycle
+      const handleSuccess = async () => {
+        resetConfirmation(); // First reset the confirmation state
+        onSuccessAction(); // Then call success action
+      };
+      handleSuccess();
     }
-  }, [isConfirmed, onSuccessAction]);
+  }, [isConfirmed, onSuccessAction, resetConfirmation]);
 
   const handleDelete = async () => {
     if (!electionId) return;

@@ -187,6 +187,7 @@ function ElectionRow({
     isPending: isOpenPending,
     isConfirming: isOpenConfirming,
     isConfirmed: isOpenConfirmed,
+    resetConfirmation: resetOpenConfirmation,
   } = useAdminOpenElection();
 
   const {
@@ -194,16 +195,26 @@ function ElectionRow({
     isPending: isClosePending,
     isConfirming: isCloseConfirming,
     isConfirmed: isCloseConfirmed,
+    resetConfirmation: resetCloseConfirmation,
   } = useAdminCloseElection();
 
   // Handle election state changes
   useEffect(() => {
     if (isOpenConfirmed || isCloseConfirmed) {
-      setIsToggling(false);
-      refetch();
-      onRefresh();
+      // Execute these in a single render cycle
+      const handleSuccess = async () => {
+        // Reset confirmation states first
+        if (isOpenConfirmed) resetOpenConfirmation();
+        if (isCloseConfirmed) resetCloseConfirmation();
+        
+        // Then update UI state
+        setIsToggling(false);
+        await refetch();
+        onRefresh();
+      };
+      handleSuccess();
     }
-  }, [isOpenConfirmed, isCloseConfirmed, refetch, onRefresh]);
+  }, [isOpenConfirmed, isCloseConfirmed, refetch, onRefresh, resetOpenConfirmation, resetCloseConfirmation]);
 
   const toggleElectionStatus = async () => {
     if (!electionDetails) return;

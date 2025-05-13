@@ -45,7 +45,7 @@ export function EditElectionDialog({
   );
 
   // Hook for updating election
-  const { adminUpdateElection, isPending, isConfirming, isConfirmed } = useAdminUpdateElection();
+  const { adminUpdateElection, isPending, isConfirming, isConfirmed, resetConfirmation } = useAdminUpdateElection();
 
   // Form setup
   const form = useForm<ElectionFormValues>({
@@ -70,9 +70,14 @@ export function EditElectionDialog({
   // Listen for successful update
   useEffect(() => {
     if (isConfirmed) {
-      onSuccessAction();
+      // Execute these in a single render cycle
+      const handleSuccess = async () => {
+        resetConfirmation(); // First reset the confirmation state
+        onSuccessAction(); // Then call success action
+      };
+      handleSuccess();
     }
-  }, [isConfirmed, onSuccessAction]);
+  }, [isConfirmed, onSuccessAction, resetConfirmation]);
 
   const onSubmit = async (values: ElectionFormValues) => {
     if (!electionId) return;

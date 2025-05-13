@@ -72,12 +72,14 @@ export function ManageCandidatesDialog({
     isPending: isEnrollPending,
     isConfirming: isEnrollConfirming,
     isConfirmed: isEnrollConfirmed,
+    resetConfirmation: resetEnrollConfirmation
   } = useAdminEnrollCandidate();
   const {
     adminWithdrawCandidate,
     isPending: isWithdrawPending,
     isConfirming: isWithdrawConfirming,
     isConfirmed: isWithdrawConfirmed,
+    resetConfirmation: resetWithdrawConfirmation
   } = useAdminWithdrawCandidate();
 
   // Computed list of available candidates (those not already enrolled)
@@ -108,11 +110,28 @@ export function ManageCandidatesDialog({
   // Handle successful enrollment/withdrawal
   useEffect(() => {
     if (isEnrollConfirmed || isWithdrawConfirmed) {
-      refetchElection();
-      refetchEnrolled();
-      onSuccessAction();
+      // Execute these in a single render cycle
+      const handleSuccess = async () => {
+        // Reset confirmation states first
+        if (isEnrollConfirmed) resetEnrollConfirmation();
+        if (isWithdrawConfirmed) resetWithdrawConfirmation();
+        
+        // Then perform the updates
+        await refetchElection();
+        await refetchEnrolled();
+        onSuccessAction();
+      };
+      handleSuccess();
     }
-  }, [isEnrollConfirmed, isWithdrawConfirmed, refetchElection, refetchEnrolled, onSuccessAction]);
+  }, [
+    isEnrollConfirmed, 
+    isWithdrawConfirmed, 
+    refetchElection, 
+    refetchEnrolled, 
+    onSuccessAction, 
+    resetEnrollConfirmation, 
+    resetWithdrawConfirmation
+  ]);
 
   // Handle enrolling a candidate
   const handleEnroll = async (candidateAddress: Address) => {
