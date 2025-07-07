@@ -310,16 +310,24 @@ export function useAdminAddCandidate() {
       manifesto,
     }: CandidateContractParams,
   ) => {
-    return execute([
-      candidateAddress,
-      name,
-      dateOfBirthEpoch,
-      gender,
-      presentAddress,
-      email,
-      qualifications,
-      manifesto,
-    ]);
+    return execute(
+      [
+        candidateAddress,
+        name,
+        dateOfBirthEpoch,
+        gender,
+        presentAddress,
+        email,
+        qualifications,
+        manifesto,
+      ],
+      {
+        loading: "Adding candidate as admin...",
+        success: "Candidate add submitted! Waiting for blockchain confirmation...",
+        error: "Failed to add candidate",
+        confirmed: "Candidate has been added successfully!",
+      },
+    );
   };
 
   return {
@@ -347,16 +355,24 @@ export function useAdminUpdateCandidate() {
       manifesto,
     }: CandidateContractParams,
   ) => {
-    return execute([
-      candidateAddress,
-      name,
-      dateOfBirthEpoch,
-      gender,
-      presentAddress,
-      email,
-      qualifications,
-      manifesto,
-    ]);
+    return execute(
+      [
+        candidateAddress,
+        name,
+        dateOfBirthEpoch,
+        gender,
+        presentAddress,
+        email,
+        qualifications,
+        manifesto,
+      ],
+      {
+        loading: "Updating candidate as admin...",
+        success: "Candidate update submitted! Waiting for blockchain confirmation...",
+        error: "Failed to update candidate",
+        confirmed: "Candidate has been updated successfully!",
+      },
+    );
   };
 
   return {
@@ -373,7 +389,12 @@ export function useAdminRemoveCandidate() {
     useCandidateDatabaseWriteFunction("adminRemoveCandidate");
 
   const adminRemoveCandidate = async (candidateAddress: Address) => {
-    return execute([candidateAddress]);
+    return execute([candidateAddress], {
+      loading: "Removing candidate as admin...",
+      success: "Candidate removal submitted! Waiting for blockchain confirmation...",
+      error: "Failed to remove candidate",
+      confirmed: "Candidate has been removed successfully!",
+    });
   };
 
   return {
@@ -416,7 +437,12 @@ export function useAddAdmin() {
     useCandidateDatabaseWriteFunction("addAdmin");
 
   const addAdmin = async (adminAddress: Address) => {
-    return execute([adminAddress]);
+    return execute([adminAddress], {
+      loading: "Adding admin...",
+      success: "Admin addition submitted! Waiting for blockchain confirmation...",
+      error: "Failed to add admin",
+      confirmed: "Admin has been added successfully!",
+    });
   };
 
   return {
@@ -433,7 +459,12 @@ export function useRemoveAdmin() {
     useCandidateDatabaseWriteFunction("removeAdmin");
 
   const removeAdmin = async (adminAddress: Address) => {
-    return execute([adminAddress]);
+    return execute([adminAddress], {
+      loading: "Removing admin...",
+      success: "Admin removal submitted! Waiting for blockchain confirmation...",
+      error: "Failed to remove admin",
+      confirmed: "Admin has been removed successfully!",
+    });
   };
 
   return {
@@ -514,7 +545,12 @@ export function useAdminImportCandidate() {
     useCandidateDatabaseWriteFunction("adminImportCandidate");
 
   const adminImportCandidate = async (sourceContract: Address, candidateAddress: Address) => {
-    return execute([sourceContract, candidateAddress]);
+    return execute([sourceContract, candidateAddress], {
+      loading: "Importing candidate...",
+      success: "Candidate import submitted! Waiting for blockchain confirmation...",
+      error: "Failed to import candidate",
+      confirmed: "Candidate has been imported successfully!",
+    });
   };
 
   return {
@@ -534,7 +570,12 @@ export function useAdminBatchImportCandidates() {
     sourceContract: Address,
     candidateAddresses: Address[],
   ) => {
-    return execute([sourceContract, candidateAddresses]);
+    return execute([sourceContract, candidateAddresses], {
+      loading: "Batch importing candidates...",
+      success: "Batch import submitted! Waiting for blockchain confirmation...",
+      error: "Failed to batch import candidates",
+      confirmed: "Candidates have been batch imported successfully!",
+    });
   };
 
   return {
@@ -551,7 +592,12 @@ export function useAdminImportAllCandidates() {
     useCandidateDatabaseWriteFunction("adminImportAllCandidates");
 
   const adminImportAllCandidates = async (sourceContract: Address) => {
-    return execute([sourceContract]);
+    return execute([sourceContract], {
+      loading: "Importing all candidates...",
+      success: "Import all submitted! Waiting for blockchain confirmation...",
+      error: "Failed to import all candidates",
+      confirmed: "All candidates have been imported successfully!",
+    });
   };
 
   return {
