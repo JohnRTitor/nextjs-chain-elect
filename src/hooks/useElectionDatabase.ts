@@ -21,7 +21,7 @@ export function useElectionDatabaseWriteFunction(functionName: string) {
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
     hash,
   });
-  
+
   // Store confirmation in local state to avoid infinite renders
   useEffect(() => {
     if (isSuccess && !isInternalConfirmed) {
@@ -369,7 +369,7 @@ export function useVote() {
 export function useGetElectionStatus(electionId: bigint | undefined) {
   const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<boolean>(
     "getElectionStatus",
-    electionId ? [electionId] : undefined,
+    electionId !== undefined ? [electionId] : undefined,
   );
 
   return {
@@ -383,7 +383,7 @@ export function useGetElectionStatus(electionId: bigint | undefined) {
 export function useGetElectionDetails(electionId: bigint | undefined) {
   const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<
     [string, string, boolean, Address[], bigint, bigint]
-  >("getElectionDetails", electionId ? [electionId] : undefined);
+  >("getElectionDetails", electionId !== undefined ? [electionId] : undefined);
 
   const formattedData: ElectionDetails | undefined = data
     ? {
@@ -431,7 +431,7 @@ export function useGetAllElectionIds() {
 export function useGetRegisteredCandidates(electionId: bigint | undefined) {
   const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<Address[]>(
     "getRegisteredCandidates",
-    electionId ? [electionId] : undefined,
+    electionId !== undefined ? [electionId] : undefined,
   );
 
   return {
@@ -448,7 +448,7 @@ export function useGetVotesOfCandidate(
 ) {
   const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<bigint>(
     "getVotesOfCandidate",
-    electionId && candidateAddress ? [electionId, candidateAddress] : undefined,
+    electionId !== undefined && candidateAddress ? [electionId, candidateAddress] : undefined,
   );
 
   return {
@@ -462,7 +462,7 @@ export function useGetVotesOfCandidate(
 export function useGetTotalVoteCount(electionId: bigint | undefined) {
   const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<bigint>(
     "getTotalVoteCount",
-    electionId ? [electionId] : undefined,
+    electionId !== undefined ? [electionId] : undefined,
   );
 
   return {
@@ -476,7 +476,7 @@ export function useGetTotalVoteCount(electionId: bigint | undefined) {
 export function useGetWinner(electionId: bigint | undefined) {
   const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<Address>(
     "getWinner",
-    electionId ? [electionId] : undefined,
+    electionId !== undefined ? [electionId] : undefined,
   );
 
   return {
@@ -490,7 +490,7 @@ export function useGetWinner(electionId: bigint | undefined) {
 export function useHasVoted(electionId: bigint | undefined, voterAddress: Address | undefined) {
   const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<boolean>(
     "hasVoted",
-    electionId && voterAddress ? [electionId, voterAddress] : undefined,
+    electionId !== undefined && voterAddress ? [electionId, voterAddress] : undefined,
   );
 
   return {
@@ -507,7 +507,7 @@ export function useGetVoteTimestamp(
 ) {
   const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<bigint>(
     "getVoteTimestamp",
-    electionId && voterAddress ? [electionId, voterAddress] : undefined,
+    electionId !== undefined && voterAddress ? [electionId, voterAddress] : undefined,
   );
 
   return {
@@ -518,13 +518,10 @@ export function useGetVoteTimestamp(
   };
 }
 
-export function useGetVoterChoice(
-  electionId: bigint | undefined,
-  voterAddress: Address | undefined,
-) {
+export function useGetVoterChoice(electionId: bigint | undefined) {
   const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<Address>(
     "getVoterChoice",
-    electionId && voterAddress ? [electionId, voterAddress] : undefined,
+    electionId !== undefined ? [electionId] : undefined,
   );
 
   return {
