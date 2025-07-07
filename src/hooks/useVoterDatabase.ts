@@ -195,7 +195,12 @@ export function useMarkVoted() {
     useVoterDatabaseWriteFunction("markVoted");
 
   const markVoted = async () => {
-    return execute();
+    return execute([], {
+      loading: "Marking as voted...",
+      success: "Vote status updated! Waiting for blockchain confirmation...",
+      error: "Failed to mark as voted",
+      confirmed: "Vote status has been updated successfully!",
+    });
   };
 
   return {
@@ -280,15 +285,15 @@ export function useAdminAddVoter() {
     { name, dateOfBirthEpoch, gender, presentAddress, email }: VoterContractParams,
     timesVoted: number = 0,
   ) => {
-    return execute([
-      voterAddress,
-      name,
-      dateOfBirthEpoch,
-      gender,
-      presentAddress,
-      email,
-      timesVoted,
-    ]);
+    return execute(
+      [voterAddress, name, dateOfBirthEpoch, gender, presentAddress, email, timesVoted],
+      {
+        loading: "Adding voter as admin...",
+        success: "Voter addition submitted! Waiting for blockchain confirmation...",
+        error: "Failed to add voter",
+        confirmed: "Voter has been added successfully!",
+      },
+    );
   };
 
   return {
@@ -309,15 +314,15 @@ export function useAdminUpdateVoter() {
     { name, dateOfBirthEpoch, gender, presentAddress, email }: VoterContractParams,
     timesVoted: number,
   ) => {
-    return execute([
-      voterAddress,
-      name,
-      dateOfBirthEpoch,
-      gender,
-      presentAddress,
-      email,
-      timesVoted,
-    ]);
+    return execute(
+      [voterAddress, name, dateOfBirthEpoch, gender, presentAddress, email, timesVoted],
+      {
+        loading: "Updating voter as admin...",
+        success: "Voter update submitted! Waiting for blockchain confirmation...",
+        error: "Failed to update voter",
+        confirmed: "Voter has been updated successfully!",
+      },
+    );
   };
 
   return {
@@ -334,7 +339,12 @@ export function useAdminRemoveVoter() {
     useVoterDatabaseWriteFunction("adminRemoveVoter");
 
   const adminRemoveVoter = async (voterAddress: Address) => {
-    return execute([voterAddress]);
+    return execute([voterAddress], {
+      loading: "Removing voter as admin...",
+      success: "Voter removal submitted! Waiting for blockchain confirmation...",
+      error: "Failed to remove voter",
+      confirmed: "Voter has been removed successfully!",
+    });
   };
 
   return {
@@ -351,7 +361,12 @@ export function useAdminMarkVoted() {
     useVoterDatabaseWriteFunction("adminMarkVoted");
 
   const adminMarkVoted = async (voterAddress: Address) => {
-    return execute([voterAddress]);
+    return execute([voterAddress], {
+      loading: "Marking voter as voted (admin)...",
+      success: "Vote status update submitted! Waiting for blockchain confirmation...",
+      error: "Failed to mark voter as voted",
+      confirmed: "Voter has been marked as voted successfully!",
+    });
   };
 
   return {
@@ -413,9 +428,10 @@ export function useAdminGetAllVoters() {
   };
 }
 
-export function useAdminGetRegistrationStatus() {
+export function useAdminGetRegistrationStatus(voterAddress: Address | undefined) {
   const { data, isLoading, isError, refetch } = useVoterDatabaseReadFunction<boolean>(
     "adminGetRegistrationStatus",
+    voterAddress ? [voterAddress] : undefined,
   );
 
   return {
@@ -432,7 +448,12 @@ export function useAddAdmin() {
     useVoterDatabaseWriteFunction("addAdmin");
 
   const addAdmin = async (adminAddress: Address) => {
-    return execute([adminAddress]);
+    return execute([adminAddress], {
+      loading: "Adding admin...",
+      success: "Admin addition submitted! Waiting for blockchain confirmation...",
+      error: "Failed to add admin",
+      confirmed: "Admin has been added successfully!",
+    });
   };
 
   return {
@@ -449,7 +470,12 @@ export function useRemoveAdmin() {
     useVoterDatabaseWriteFunction("removeAdmin");
 
   const removeAdmin = async (adminAddress: Address) => {
-    return execute([adminAddress]);
+    return execute([adminAddress], {
+      loading: "Removing admin...",
+      success: "Admin removal submitted! Waiting for blockchain confirmation...",
+      error: "Failed to remove admin",
+      confirmed: "Admin has been removed successfully!",
+    });
   };
 
   return {
@@ -467,6 +493,18 @@ export function useGetAllAdmins() {
 
   return {
     admins: data,
+    isLoading,
+    isError,
+    refetch,
+  };
+}
+
+export function useGetAdminCount() {
+  const { data, isLoading, isError, refetch } =
+    useVoterDatabaseReadFunction<bigint>("getAdminCount");
+
+  return {
+    adminCount: data,
     isLoading,
     isError,
     refetch,
@@ -516,7 +554,12 @@ export function useAdminImportVoter() {
     useVoterDatabaseWriteFunction("adminImportVoter");
 
   const adminImportVoter = async (sourceContract: Address, voterAddress: Address) => {
-    return execute([sourceContract, voterAddress]);
+    return execute([sourceContract, voterAddress], {
+      loading: "Importing voter...",
+      success: "Voter import submitted! Waiting for blockchain confirmation...",
+      error: "Failed to import voter",
+      confirmed: "Voter has been imported successfully!",
+    });
   };
 
   return {
@@ -533,7 +576,12 @@ export function useAdminBatchImportVoters() {
     useVoterDatabaseWriteFunction("adminBatchImportVoters");
 
   const adminBatchImportVoters = async (sourceContract: Address, voterAddresses: Address[]) => {
-    return execute([sourceContract, voterAddresses]);
+    return execute([sourceContract, voterAddresses], {
+      loading: "Batch importing voters...",
+      success: "Batch import submitted! Waiting for blockchain confirmation...",
+      error: "Failed to batch import voters",
+      confirmed: "Voters have been batch imported successfully!",
+    });
   };
 
   return {
@@ -550,7 +598,12 @@ export function useAdminImportAllVoters() {
     useVoterDatabaseWriteFunction("adminImportAllVoters");
 
   const adminImportAllVoters = async (sourceContract: Address) => {
-    return execute([sourceContract]);
+    return execute([sourceContract], {
+      loading: "Importing all voters...",
+      success: "Import all submitted! Waiting for blockchain confirmation...",
+      error: "Failed to import all voters",
+      confirmed: "All voters have been imported successfully!",
+    });
   };
 
   return {
