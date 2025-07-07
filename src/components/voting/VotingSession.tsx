@@ -20,12 +20,12 @@ import { VotingResults } from "./VotingResults";
 
 interface VotingSessionProps {
   electionId: bigint;
-  onBackToSelection: () => void;
+  onBackToSelectionAction: () => void;
 }
 
 type VotingStep = "loading" | "candidate-selection" | "vote-confirmation" | "results";
 
-export function VotingSession({ electionId, onBackToSelection }: VotingSessionProps) {
+export function VotingSession({ electionId, onBackToSelectionAction }: VotingSessionProps) {
   const { address } = useAccount();
   const { electionDetails, isLoading: isLoadingElection } = useGetElectionDetails(electionId);
   const { hasVoted, isLoading: isCheckingVoted } = useHasVoted(electionId, address);
@@ -73,7 +73,7 @@ export function VotingSession({ electionId, onBackToSelection }: VotingSessionPr
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={onBackToSelection}>
+            <Button variant="ghost" size="icon" onClick={onBackToSelectionAction}>
               <ArrowLeftIcon className="h-4 w-4" />
             </Button>
             <CardTitle>Loading Election...</CardTitle>
@@ -93,7 +93,7 @@ export function VotingSession({ electionId, onBackToSelection }: VotingSessionPr
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={onBackToSelection}>
+            <Button variant="ghost" size="icon" onClick={onBackToSelectionAction}>
               <ArrowLeftIcon className="h-4 w-4" />
             </Button>
             <CardTitle>Election Not Found</CardTitle>
@@ -114,7 +114,7 @@ export function VotingSession({ electionId, onBackToSelection }: VotingSessionPr
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={onBackToSelection}>
+            <Button variant="ghost" size="icon" onClick={onBackToSelectionAction}>
               <ArrowLeftIcon className="h-4 w-4" />
             </Button>
             <CardTitle>{electionDetails.name}</CardTitle>
@@ -141,7 +141,7 @@ export function VotingSession({ electionId, onBackToSelection }: VotingSessionPr
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" onClick={onBackToSelection}>
+              <Button variant="ghost" size="icon" onClick={onBackToSelectionAction}>
                 <ArrowLeftIcon className="h-4 w-4" />
               </Button>
               <div>
@@ -161,16 +161,19 @@ export function VotingSession({ electionId, onBackToSelection }: VotingSessionPr
 
       {/* Voting Steps */}
       {currentStep === "candidate-selection" && (
-        <CandidateSelection electionId={electionId} onCandidateSelect={handleCandidateSelect} />
+        <CandidateSelection
+          electionId={electionId}
+          onCandidateSelectAction={handleCandidateSelect}
+        />
       )}
 
       {currentStep === "vote-confirmation" && selectedCandidate && (
         <VoteConfirmation
           electionId={electionId}
           candidateAddress={selectedCandidate}
-          onConfirm={handleConfirmVote}
-          onBack={handleBackToSelection}
-          onSuccess={handleVoteSuccess}
+          onConfirmAction={handleConfirmVote}
+          onBackAction={handleBackToSelection}
+          onSuccessAction={handleVoteSuccess}
         />
       )}
 

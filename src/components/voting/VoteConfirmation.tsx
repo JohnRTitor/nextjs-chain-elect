@@ -23,17 +23,17 @@ import { calculateAge } from "@/lib/utils/date-conversions";
 interface VoteConfirmationProps {
   electionId: bigint;
   candidateAddress: Address;
-  onConfirm: () => void;
-  onBack: () => void;
-  onSuccess: () => void;
+  onConfirmAction: () => void;
+  onBackAction: () => void;
+  onSuccessAction: () => void;
 }
 
 export function VoteConfirmation({
   electionId,
   candidateAddress,
-  onConfirm,
-  onBack,
-  onSuccess,
+  onConfirmAction,
+  onBackAction,
+  onSuccessAction,
 }: VoteConfirmationProps) {
   const { candidateDetails, isLoading: isLoadingCandidate } =
     useGetCandidateDetails(candidateAddress);
@@ -42,13 +42,13 @@ export function VoteConfirmation({
   // Handle successful vote confirmation
   useEffect(() => {
     if (isConfirmed) {
-      onSuccess();
+      onSuccessAction();
     }
-  }, [isConfirmed, onSuccess]);
+  }, [isConfirmed, onSuccessAction]);
 
   const handleVoteSubmit = async () => {
     await vote(electionId, candidateAddress);
-    onConfirm();
+    onConfirmAction();
   };
 
   const isProcessing = isPending || isConfirming;
@@ -58,7 +58,7 @@ export function VoteConfirmation({
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={onBack} disabled={isProcessing}>
+            <Button variant="ghost" size="icon" onClick={onBackAction} disabled={isProcessing}>
               <ArrowLeftIcon className="h-4 w-4" />
             </Button>
             <CardTitle>Confirm Your Vote</CardTitle>
@@ -78,7 +78,7 @@ export function VoteConfirmation({
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={onBack} disabled={isProcessing}>
+            <Button variant="ghost" size="icon" onClick={onBackAction} disabled={isProcessing}>
               <ArrowLeftIcon className="h-4 w-4" />
             </Button>
             <CardTitle>Confirm Your Vote</CardTitle>
@@ -119,7 +119,7 @@ export function VoteConfirmation({
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" onClick={onBack} disabled={isProcessing}>
+            <Button variant="ghost" size="icon" onClick={onBackAction} disabled={isProcessing}>
               <ArrowLeftIcon className="h-4 w-4" />
             </Button>
             <CardTitle>Confirm Your Vote</CardTitle>
@@ -178,7 +178,12 @@ export function VoteConfirmation({
 
           {/* Action Buttons */}
           <div className="flex gap-3 pt-4">
-            <Button variant="outline" onClick={onBack} disabled={isProcessing} className="flex-1">
+            <Button
+              variant="outline"
+              onClick={onBackAction}
+              disabled={isProcessing}
+              className="flex-1"
+            >
               Go Back
             </Button>
             <Button

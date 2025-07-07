@@ -75,11 +75,11 @@ export function VotingBooth() {
       </Alert>
 
       {!selectedElectionId ? (
-        <ElectionSelector onElectionSelect={setSelectedElectionId} />
+        <ElectionSelector onElectionSelectAction={setSelectedElectionId} />
       ) : (
         <VotingSession
           electionId={selectedElectionId}
-          onBackToSelection={() => setSelectedElectionId(null)}
+          onBackToSelectionAction={() => setSelectedElectionId(null)}
         />
       )}
     </div>

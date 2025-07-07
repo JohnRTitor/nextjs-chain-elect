@@ -9,10 +9,10 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { InfoIcon, VoteIcon } from "lucide-react";
 
 interface ElectionSelectorProps {
-  onElectionSelect: (electionId: bigint) => void;
+  onElectionSelectAction: (electionId: bigint) => void;
 }
 
-export function ElectionSelector({ onElectionSelect }: ElectionSelectorProps) {
+export function ElectionSelector({ onElectionSelectAction }: ElectionSelectorProps) {
   const { electionIds, isLoading: isLoadingIds } = useGetAllElectionIds();
 
   if (isLoadingIds) {
@@ -62,7 +62,7 @@ export function ElectionSelector({ onElectionSelect }: ElectionSelectorProps) {
           <ElectionCard
             key={electionId.toString()}
             electionId={electionId}
-            onSelect={() => onElectionSelect(electionId)}
+            onSelect={() => onElectionSelectAction(electionId)}
           />
         ))}
       </CardContent>

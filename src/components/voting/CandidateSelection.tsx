@@ -14,10 +14,13 @@ import { calculateAge } from "@/lib/utils/date-conversions";
 
 interface CandidateSelectionProps {
   electionId: bigint;
-  onCandidateSelect: (candidateAddress: Address) => void;
+  onCandidateSelectAction: (candidateAddress: Address) => void;
 }
 
-export function CandidateSelection({ electionId, onCandidateSelect }: CandidateSelectionProps) {
+export function CandidateSelection({
+  electionId,
+  onCandidateSelectAction,
+}: CandidateSelectionProps) {
   const { candidates, isLoading } = useGetRegisteredCandidates(electionId);
 
   if (isLoading) {
@@ -69,7 +72,7 @@ export function CandidateSelection({ electionId, onCandidateSelect }: CandidateS
           <CandidateCard
             key={candidateAddress}
             candidateAddress={candidateAddress}
-            onSelect={() => onCandidateSelect(candidateAddress)}
+            onSelect={() => onCandidateSelectAction(candidateAddress)}
           />
         ))}
       </CardContent>
