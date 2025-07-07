@@ -1,6 +1,6 @@
 {
   "addresses": {
-    "sepolia": "0xc9B4aCbe21964C9cd68ACC1FC63c6559e52AAdb1"
+    "sepolia": "0xa1dA479974c5dF1F795baA551DCAab31F5371866"
   },
   "abi": [
     {
@@ -722,11 +722,6 @@
           "internalType": "uint256",
           "name": "_electionId",
           "type": "uint256"
-        },
-        {
-          "internalType": "address",
-          "name": "_voter",
-          "type": "address"
         }
       ],
       "name": "getVoterChoice",
