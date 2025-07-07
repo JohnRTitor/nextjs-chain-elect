@@ -1,0 +1,320 @@
+"use client";
+
+import React, { useState } from "react";
+import { useGetAllElectionIds, useGetElectionDetails } from "@/hooks/useElectionDatabase";
+import { useEnrollCandidate, useWithdrawCandidate } from "@/hooks/useElectionDatabase";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { LoadingSpinner } from "@/components/common/LoadingSpinner";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { FormSubmitLoader } from "@/components/common/FormSubmitLoader";
+import {
+  InfoIcon,
+  UserPlusIcon,
+  UserMinusIcon,
+  CheckCircle2Icon,
+  UsersIcon,
+  CalendarIcon,
+  AlertTriangleIcon,
+  VoteIcon,
+} from "lucide-react";
+import { useAccount } from "wagmi";
+
+export function CandidateElectionsView() {
+  const { electionIds, isLoading: isLoadingIds } = useGetAllElectionIds();
+  const [processingElectionId, setProcessingElectionId] = useState<bigint | null>(null);
+
+  if (isLoadingIds) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Elections - Candidate View</CardTitle>
+          <CardDescription>Enroll in elections as a candidate</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex justify-center py-8">
+            <LoadingSpinner message="Loading elections..." />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!electionIds || electionIds.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Elections - Candidate View</CardTitle>
+          <CardDescription>Enroll in elections as a candidate</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Alert>
+            <InfoIcon className="h-4 w-4" />
+            <AlertTitle>No Elections Available</AlertTitle>
+            <AlertDescription>
+              There are currently no elections available for candidate enrollment. Check back later
+              for upcoming elections.
+            </AlertDescription>
+          </Alert>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <Alert>
+        <InfoIcon className="h-4 w-4" />
+        <AlertTitle>Candidate Access</AlertTitle>
+        <AlertDescription>
+          As a registered candidate, you can enroll in active elections. Once enrolled, voters will
+          be able to see your profile and vote for you.
+        </AlertDescription>
+      </Alert>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Available Elections</CardTitle>
+          <CardDescription>
+            Enroll in elections to participate as a candidate. You can withdraw your candidacy
+            before voting ends.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {electionIds.map((electionId) => (
+            <CandidateElectionCard
+              key={electionId.toString()}
+              electionId={electionId}
+              isProcessing={processingElectionId === electionId}
+              onStartProcessing={() => setProcessingElectionId(electionId)}
+              onEndProcessing={() => setProcessingElectionId(null)}
+            />
+          ))}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+interface CandidateElectionCardProps {
+  electionId: bigint;
+  isProcessing: boolean;
+  onStartProcessing: () => void;
+  onEndProcessing: () => void;
+}
+
+function CandidateElectionCard({
+  electionId,
+  isProcessing,
+  onStartProcessing,
+  onEndProcessing,
+}: CandidateElectionCardProps) {
+  const { address } = useAccount();
+  const { electionDetails, isLoading } = useGetElectionDetails(electionId);
+  const {
+    enrollCandidate,
+    isPending: isEnrolling,
+    isConfirming: isConfirmingEnroll,
+    isConfirmed: isEnrollConfirmed,
+  } = useEnrollCandidate();
+  const {
+    withdrawCandidate,
+    isPending: isWithdrawing,
+    isConfirming: isConfirmingWithdraw,
+    isConfirmed: isWithdrawConfirmed,
+  } = useWithdrawCandidate();
+
+  // Check if current user is enrolled in this election
+  const isEnrolled = address && electionDetails?.candidates.includes(address);
+  const isTransactionPending =
+    isEnrolling || isWithdrawing || isConfirmingEnroll || isConfirmingWithdraw;
+
+  // Handle enrollment confirmation
+  React.useEffect(() => {
+    if (isEnrollConfirmed || isWithdrawConfirmed) {
+      onEndProcessing();
+    }
+  }, [isEnrollConfirmed, isWithdrawConfirmed, onEndProcessing]);
+
+  const handleEnroll = async () => {
+    onStartProcessing();
+    await enrollCandidate(electionId);
+  };
+
+  const handleWithdraw = async () => {
+    onStartProcessing();
+    await withdrawCandidate(electionId);
+  };
+
+  if (isLoading) {
+    return (
+      <Card className="border-2">
+        <CardContent className="p-4">
+          <LoadingSpinner size="sm" message="Loading election details..." />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (!electionDetails) {
+    return null;
+  }
+
+  const totalVotes = Number(electionDetails.totalVotes);
+
+  return (
+    <>
+      {/* Form submission overlay */}
+      <FormSubmitLoader
+        isPending={isEnrolling || isWithdrawing}
+        isConfirming={isConfirmingEnroll || isConfirmingWithdraw}
+        message={
+          isEnrolling || isConfirmingEnroll
+            ? "Enrolling in election..."
+            : "Withdrawing from election..."
+        }
+      />
+
+      <Card
+        className={`border-2 transition-all ${
+          electionDetails.isActive
+            ? isEnrolled
+              ? "border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800"
+              : "border-green-200 bg-green-50 dark:bg-green-950 dark:border-green-800"
+            : "border-gray-200 bg-gray-50 dark:bg-gray-950 dark:border-gray-800 opacity-75"
+        }`}
+      >
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div className="space-y-3 flex-1">
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold text-lg">{electionDetails.name}</h3>
+                <Badge variant={electionDetails.isActive ? "default" : "secondary"}>
+                  {electionDetails.isActive ? "Active" : "Closed"}
+                </Badge>
+                {isEnrolled && (
+                  <Badge variant="outline" className="text-blue-600 border-blue-600">
+                    <CheckCircle2Icon className="h-3 w-3 mr-1" />
+                    Enrolled
+                  </Badge>
+                )}
+              </div>
+
+              <p className="text-sm text-muted-foreground line-clamp-2">
+                {electionDetails.description}
+              </p>
+
+              <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1">
+                  <UsersIcon className="h-4 w-4" />
+                  <span>{electionDetails.candidates.length} candidates</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <VoteIcon className="h-4 w-4" />
+                  <span>{totalVotes} votes cast</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <CalendarIcon className="h-4 w-4" />
+                  <span>
+                    Created{" "}
+                    {new Date(
+                      Number(electionDetails.registrationTimestamp) * 1000,
+                    ).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+
+              {/* Election Status Info */}
+              {electionDetails.isActive ? (
+                isEnrolled ? (
+                  <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+                      <CheckCircle2Icon className="h-4 w-4" />
+                      <span className="text-sm font-medium">You are enrolled as a candidate</span>
+                    </div>
+                    <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                      Voters can now see your profile and vote for you
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg border border-green-200 dark:border-green-800">
+                    <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
+                      <UserPlusIcon className="h-4 w-4" />
+                      <span className="text-sm font-medium">Ready for enrollment</span>
+                    </div>
+                    <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                      You can enroll as a candidate in this active election
+                    </p>
+                  </div>
+                )
+              ) : (
+                <div className="bg-gray-100 dark:bg-gray-900/30 p-3 rounded-lg border border-gray-200 dark:border-gray-800">
+                  <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+                    <InfoIcon className="h-4 w-4" />
+                    <span className="text-sm font-medium">Election closed</span>
+                  </div>
+                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                    {isEnrolled
+                      ? "You were enrolled as a candidate in this election"
+                      : "This election is no longer accepting new candidates"}
+                  </p>
+                </div>
+              )}
+
+              {/* Warning for votes cast */}
+              {isEnrolled && totalVotes > 0 && (
+                <Alert variant="destructive">
+                  <AlertTriangleIcon className="h-4 w-4" />
+                  <AlertTitle>Warning</AlertTitle>
+                  <AlertDescription>
+                    {totalVotes} vote{totalVotes === 1 ? " has" : "s have"} already been cast in
+                    this election. Withdrawing now may affect the election results.
+                  </AlertDescription>
+                </Alert>
+              )}
+            </div>
+
+            <div className="ml-6">
+              {electionDetails.isActive ? (
+                isEnrolled ? (
+                  <Button
+                    variant="outline"
+                    onClick={handleWithdraw}
+                    disabled={isTransactionPending || isProcessing}
+                    className="flex items-center gap-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
+                  >
+                    {isTransactionPending ? (
+                      <LoadingSpinner size="sm" />
+                    ) : (
+                      <UserMinusIcon className="h-4 w-4" />
+                    )}
+                    Withdraw
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={handleEnroll}
+                    disabled={isTransactionPending || isProcessing}
+                    className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+                  >
+                    {isTransactionPending ? (
+                      <LoadingSpinner size="sm" />
+                    ) : (
+                      <UserPlusIcon className="h-4 w-4" />
+                    )}
+                    Enroll
+                  </Button>
+                )
+              ) : (
+                <Button variant="outline" disabled className="flex items-center gap-2">
+                  <InfoIcon className="h-4 w-4" />
+                  Election Closed
+                </Button>
+              )}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </>
+  );
+}

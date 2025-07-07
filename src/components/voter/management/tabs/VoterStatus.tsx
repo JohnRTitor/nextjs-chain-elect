@@ -3,7 +3,14 @@ import { InfoIcon } from "lucide-react";
 import { VoterDetails } from "@/types";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2Icon, VoteIcon } from "lucide-react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import Link from "next/link";
 
 interface VoterStatusProps {
@@ -13,7 +20,7 @@ interface VoterStatusProps {
 export function VoterStatus({ voterDetails }: VoterStatusProps) {
   // Determine if the voter has voted by checking timesVoted
   const hasVoted = voterDetails.timesVoted > 0n;
-  
+
   return (
     <div className="space-y-6">
       <h2 className="text-xl font-semibold">Election Participation Status</h2>
@@ -22,7 +29,7 @@ export function VoterStatus({ voterDetails }: VoterStatusProps) {
         <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <VoteIcon className="h-5 w-5" /> 
+              <VoteIcon className="h-5 w-5" />
               Voting Status
             </CardTitle>
             <CardDescription>Your current participation in the election</CardDescription>
@@ -36,11 +43,13 @@ export function VoterStatus({ voterDetails }: VoterStatusProps) {
               )}
               <div>
                 <p className="font-medium text-lg">
-                  {hasVoted ? `You have voted ${voterDetails.timesVoted.toString()} ${voterDetails.timesVoted === 1n ? "time" : "times"}` : "You have not voted yet"}
+                  {hasVoted
+                    ? `You have voted ${voterDetails.timesVoted.toString()} ${voterDetails.timesVoted === 1n ? "time" : "times"}`
+                    : "You have not voted yet"}
                 </p>
                 <p className="text-muted-foreground">
-                  {hasVoted 
-                    ? "Your vote has been securely recorded on the blockchain" 
+                  {hasVoted
+                    ? "Your vote has been securely recorded on the blockchain"
                     : "You are eligible to participate in the current election"}
                 </p>
               </div>
@@ -48,9 +57,9 @@ export function VoterStatus({ voterDetails }: VoterStatusProps) {
           </CardContent>
           {!hasVoted && (
             <CardFooter>
-              <Link href="/vote" className="w-full">
+              <Link href="/elections" className="w-full">
                 <Button className="w-full">
-                  <VoteIcon className="mr-2 h-4 w-4" /> Go to Voting Booth
+                  <VoteIcon className="mr-2 h-4 w-4" /> Go to Elections
                 </Button>
               </Link>
             </CardFooter>
@@ -72,8 +81,8 @@ export function VoterStatus({ voterDetails }: VoterStatusProps) {
           <InfoIcon className="h-4 w-4" />
           <AlertTitle>Ready to vote</AlertTitle>
           <AlertDescription>
-            As a registered voter, you can cast your vote for your preferred candidate.
-            Visit the voting section to participate in the democratic process.
+            As a registered voter, you can cast your vote for your preferred candidate. Visit the
+            voting section to participate in the democratic process.
           </AlertDescription>
         </Alert>
       )}

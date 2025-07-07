@@ -11,13 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { FormSubmitLoader } from "@/components/common/FormSubmitLoader";
-import {
-  ArrowLeftIcon,
-  VoteIcon,
-  AlertTriangleIcon,
-  CheckCircle2Icon,
-  ShieldCheckIcon,
-} from "lucide-react";
+import { ArrowLeftIcon, VoteIcon, AlertTriangleIcon, ShieldCheckIcon } from "lucide-react";
 import { calculateAge } from "@/lib/utils/date-conversions";
 
 interface VoteConfirmationProps {

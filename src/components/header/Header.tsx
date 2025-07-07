@@ -24,7 +24,7 @@ export default function Header() {
 
   const navLinks: NavLink[] = [
     { href: "/", label: "Home" },
-    { href: "/public", label: "Elections" },
+    { href: "/elections", label: "Elections" },
     { href: "/about", label: "About" },
     { href: "/contact", label: "Contact" },
   ];

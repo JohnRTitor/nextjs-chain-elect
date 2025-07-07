@@ -38,7 +38,6 @@ export const createGenderValidation = (message = "Please select a gender") =>
 export function convertDateOfBirthToEpoch<T extends { dateOfBirth: string }>(
   data: T,
 ): Omit<T, "dateOfBirth"> & { dateOfBirthEpoch: bigint } {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { dateOfBirth, ...rest } = data;
   return {
     ...rest,

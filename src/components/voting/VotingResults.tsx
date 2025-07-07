@@ -128,7 +128,7 @@ export function VotingResults({ electionId, userChoice }: VotingResultsProps) {
           ) : (
             <div className="space-y-4">
               {candidates
-                .sort((a, b) => {
+                .sort(() => {
                   // Sort by vote count (will be handled by CandidateResult component)
                   return 0;
                 })
