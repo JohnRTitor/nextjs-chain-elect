@@ -61,7 +61,7 @@ export function DeleteElectionDialog({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Election</AlertDialogTitle>
-          <AlertDialogDescription>
+          <AlertDialogDescription asChild>
             {isLoading ? (
               <LoadingSpinner message="Loading election details..." />
             ) : !canDelete ? (

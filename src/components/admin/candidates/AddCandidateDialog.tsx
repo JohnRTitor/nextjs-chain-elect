@@ -3,14 +3,7 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { valibotResolver } from "@hookform/resolvers/valibot";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { HybridDialogDrawer } from "@/components/ui/HybridDialogDrawer";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -143,180 +136,180 @@ export function AddCandidateDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChangeAction}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Add New Candidate</DialogTitle>
-          <DialogDescription>
-            Register a new candidate in the system. This will create a candidate entry linked to
-            the specified wallet address.
-          </DialogDescription>
-        </DialogHeader>
+    <HybridDialogDrawer
+      open={open}
+      onOpenChange={onOpenChangeAction}
+      title="Add New Candidate"
+      description="Register a new candidate in the system. This will create a candidate entry linked to the specified wallet address."
+      drawerWidthClass="max-w-lg"
+      dialogWidthClass="sm:max-w-lg"
+      showDrawerCloseButton={true}
+      footer={
+        <div className="pt-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => onOpenChangeAction(false)}
+            disabled={isPending || isConfirming}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            form="add-candidate-form"
+            disabled={isPending || isConfirming || !form.formState.isValid}
+          >
+            {isPending ? "Adding..." : isConfirming ? "Confirming..." : "Add Candidate"}
+          </Button>
+        </div>
+      }
+    >
+      <Form {...form}>
+        <form id="add-candidate-form" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="walletAddress"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Wallet Address</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="0x..." disabled={isPending || isConfirming} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full Name</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="Candidate's full name"
+                    disabled={isPending || isConfirming}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="grid grid-cols-2 gap-4">
+            <FormDatePickerControl
               control={form.control}
-              name="walletAddress"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Wallet Address</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="0x..." disabled={isPending || isConfirming} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              name="dateOfBirth"
+              label="Date of Birth"
+              placeholder="Select date of birth"
+              disabled={isPending || isConfirming}
+              required={true}
+              isDateOfBirth={true}
             />
 
             <FormField
               control={form.control}
-              name="name"
+              name="gender"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                <FormItem className="space-y-3">
+                  <FormLabel>Gender</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="Candidate's full name"
+                    <RadioGroup
+                      onValueChange={(value) => field.onChange(parseInt(value))}
+                      defaultValue={field.value.toString()}
+                      className="flex space-x-4"
                       disabled={isPending || isConfirming}
-                    />
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="0" id="add-male" />
+                        <FormLabel htmlFor="add-male">Male</FormLabel>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="1" id="add-female" />
+                        <FormLabel htmlFor="add-female">Female</FormLabel>
+                      </div>
+                    </RadioGroup>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+          </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormDatePickerControl
-                control={form.control}
-                name="dateOfBirth"
-                label="Date of Birth"
-                placeholder="Select date of birth"
-                disabled={isPending || isConfirming}
-                required={true}
-                isDateOfBirth={true}
-              />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="email"
+                    placeholder="email@example.com"
+                    disabled={isPending || isConfirming}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-              <FormField
-                control={form.control}
-                name="gender"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>Gender</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={(value) => field.onChange(parseInt(value))}
-                        defaultValue={field.value.toString()}
-                        className="flex space-x-4"
-                        disabled={isPending || isConfirming}
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="0" id="add-male" />
-                          <FormLabel htmlFor="add-male">Male</FormLabel>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="1" id="add-female" />
-                          <FormLabel htmlFor="add-female">Female</FormLabel>
-                        </div>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+          <FormField
+            control={form.control}
+            name="presentAddress"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Present Address</FormLabel>
+                <FormControl>
+                  <Textarea {...field} rows={2} disabled={isPending || isConfirming} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      type="email"
-                      placeholder="email@example.com"
-                      disabled={isPending || isConfirming}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <FormField
+            control={form.control}
+            name="qualifications"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Qualifications</FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    rows={3}
+                    placeholder="Educational and professional qualifications"
+                    disabled={isPending || isConfirming}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <FormField
-              control={form.control}
-              name="presentAddress"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Present Address</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} rows={2} disabled={isPending || isConfirming} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="qualifications"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Qualifications</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      rows={3}
-                      placeholder="Educational and professional qualifications"
-                      disabled={isPending || isConfirming}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="manifesto"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Manifesto</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      rows={4}
-                      placeholder="Candidate's election manifesto and vision"
-                      disabled={isPending || isConfirming}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <DialogFooter className="pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChangeAction(false)}
-                disabled={isPending || isConfirming}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={isPending || isConfirming || !form.formState.isValid}
-              >
-                {isPending ? "Adding..." : isConfirming ? "Confirming..." : "Add Candidate"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+          <FormField
+            control={form.control}
+            name="manifesto"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Manifesto</FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    rows={4}
+                    placeholder="Candidate's election manifesto and vision"
+                    disabled={isPending || isConfirming}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </form>
+      </Form>
+    </HybridDialogDrawer>
   );
 }

@@ -3,14 +3,7 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { valibotResolver } from "@hookform/resolvers/valibot";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { HybridDialogDrawer } from "@/components/ui/HybridDialogDrawer";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -54,7 +47,8 @@ export function CreateElectionDialog({
   onOpenChangeAction,
   onSuccessAction,
 }: CreateElectionDialogProps) {
-  const { adminCreateElection, isPending, isConfirming, isConfirmed, resetConfirmation } = useAdminCreateElection();
+  const { adminCreateElection, isPending, isConfirming, isConfirmed, resetConfirmation } =
+    useAdminCreateElection();
 
   // Form setup
   const form = useForm<CreateElectionFormValues>({
@@ -94,73 +88,70 @@ export function CreateElectionDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChangeAction}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
-          <DialogTitle>Create New Election</DialogTitle>
-          <DialogDescription>
-            Create a new election campaign. The election will be created in an inactive state.
-          </DialogDescription>
-        </DialogHeader>
+    <HybridDialogDrawer
+      open={open}
+      onOpenChange={onOpenChangeAction}
+      title="Create New Election"
+      description="Create a new election campaign. The election will be created in an inactive state."
+      dialogWidthClass="sm:max-w-lg"
+      drawerWidthClass="max-w-md"
+      showDrawerCloseButton={true}
+      footer={null}
+    >
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Election Name</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="e.g. Presidential Election 2025"
+                    disabled={isPending || isConfirming}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Election Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="e.g. Presidential Election 2025"
-                      disabled={isPending || isConfirming}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Textarea
+                    {...field}
+                    placeholder="Provide details about the election"
+                    disabled={isPending || isConfirming}
+                    rows={4}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder="Provide details about the election"
-                      disabled={isPending || isConfirming}
-                      rows={4}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <DialogFooter className="pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChangeAction(false)}
-                disabled={isPending || isConfirming}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={isPending || isConfirming || !form.formState.isValid}
-              >
-                {isPending ? "Creating..." : isConfirming ? "Confirming..." : "Create Election"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+          <div className="pt-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChangeAction(false)}
+              disabled={isPending || isConfirming}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isPending || isConfirming || !form.formState.isValid}>
+              {isPending ? "Creating..." : isConfirming ? "Confirming..." : "Create Election"}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </HybridDialogDrawer>
   );
 }

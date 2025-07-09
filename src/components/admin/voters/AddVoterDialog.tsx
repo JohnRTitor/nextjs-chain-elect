@@ -3,14 +3,7 @@
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { valibotResolver } from "@hookform/resolvers/valibot";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
+import { HybridDialogDrawer } from "@/components/ui/HybridDialogDrawer";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -131,133 +124,129 @@ export function AddVoterDialog({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChangeAction}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>Add New Voter</DialogTitle>
-          <DialogDescription>
-            Register a new voter in the system. This will create a voter entry linked to the
-            specified wallet address.
-          </DialogDescription>
-        </DialogHeader>
+    <HybridDialogDrawer
+      open={open}
+      onOpenChange={onOpenChangeAction}
+      title="Add New Voter"
+      description="Register a new voter in the system. This will create a voter entry linked to the specified wallet address."
+      footer={null}
+      drawerWidthClass="max-w-lg"
+      dialogWidthClass="sm:max-w-lg"
+      showDrawerCloseButton={true}
+    >
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="walletAddress"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Wallet Address</FormLabel>
+                <FormControl>
+                  <Input {...field} placeholder="0x..." disabled={isPending || isConfirming} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full Name</FormLabel>
+                <FormControl>
+                  <Input {...field} disabled={isPending || isConfirming} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <div className="grid grid-cols-2 gap-4">
+            <FormDatePickerControl
+              control={form.control}
+              name="dateOfBirth"
+              label="Date of Birth"
+              placeholder="Select date of birth"
+              disabled={isPending || isConfirming}
+              required={true}
+              isDateOfBirth={true}
+            />
+
             <FormField
               control={form.control}
-              name="walletAddress"
+              name="gender"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Wallet Address</FormLabel>
+                <FormItem className="space-y-3">
+                  <FormLabel>Gender</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="0x..." disabled={isPending || isConfirming} />
+                    <RadioGroup
+                      onValueChange={(value) => field.onChange(parseInt(value))}
+                      defaultValue={field.value.toString()}
+                      className="flex space-x-4"
+                      disabled={isPending || isConfirming}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="0" id="add-male" />
+                        <FormLabel htmlFor="add-male">Male</FormLabel>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="1" id="add-female" />
+                        <FormLabel htmlFor="add-female">Female</FormLabel>
+                      </div>
+                    </RadioGroup>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+          </div>
 
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                  <FormControl>
-                    <Input {...field} disabled={isPending || isConfirming} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input {...field} type="email" disabled={isPending || isConfirming} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-            <div className="grid grid-cols-2 gap-4">
-              <FormDatePickerControl
-                control={form.control}
-                name="dateOfBirth"
-                label="Date of Birth"
-                placeholder="Select date of birth"
-                disabled={isPending || isConfirming}
-                required={true}
-                isDateOfBirth={true}
-              />
+          <FormField
+            control={form.control}
+            name="presentAddress"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Present Address</FormLabel>
+                <FormControl>
+                  <Textarea {...field} rows={3} disabled={isPending || isConfirming} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-              <FormField
-                control={form.control}
-                name="gender"
-                render={({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>Gender</FormLabel>
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={(value) => field.onChange(parseInt(value))}
-                        defaultValue={field.value.toString()}
-                        className="flex space-x-4"
-                        disabled={isPending || isConfirming}
-                      >
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="0" id="add-male" />
-                          <FormLabel htmlFor="add-male">Male</FormLabel>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <RadioGroupItem value="1" id="add-female" />
-                          <FormLabel htmlFor="add-female">Female</FormLabel>
-                        </div>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input {...field} type="email" disabled={isPending || isConfirming} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="presentAddress"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Present Address</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} rows={3} disabled={isPending || isConfirming} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <DialogFooter className="pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => onOpenChangeAction(false)}
-                disabled={isPending || isConfirming}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={isPending || isConfirming || !form.formState.isValid}
-              >
-                {isPending ? "Adding..." : isConfirming ? "Confirming..." : "Add Voter"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+          <div className="pt-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChangeAction(false)}
+              disabled={isPending || isConfirming}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isPending || isConfirming || !form.formState.isValid}>
+              {isPending ? "Adding..." : isConfirming ? "Confirming..." : "Add Voter"}
+            </Button>
+          </div>
+        </form>
+      </Form>
+    </HybridDialogDrawer>
   );
 }
