@@ -160,7 +160,18 @@ export function ManageCandidatesDialog({
     <Dialog open={open} onOpenChange={(value) => !isProcessing && onOpenChangeAction(value)}>
       <DialogContent className="sm:max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Manage Election Candidates</DialogTitle>
+          <DialogTitle>
+            Manage Candidates
+            {electionDetails && (
+              <>
+                {" "}
+                — <span className="font-semibold">{electionDetails.name}</span>
+                <span className="ml-2 text-xs text-muted-foreground">
+                  (ID: {electionId?.toString()})
+                </span>
+              </>
+            )}
+          </DialogTitle>
           <DialogDescription>
             Add or remove candidates for this election.
             {isElectionNew(electionDetails?.status || 0) && (

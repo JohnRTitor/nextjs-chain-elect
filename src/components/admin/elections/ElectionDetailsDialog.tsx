@@ -44,7 +44,12 @@ export function ElectionDetailsDialog({
     <Dialog open={open} onOpenChange={onOpenChangeAction}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Election Details</DialogTitle>
+          <DialogTitle>
+            Election Details
+            <span className="ml-2 text-xs font-mono text-muted-foreground">
+              (ID: {electionId?.toString()})
+            </span>
+          </DialogTitle>
           <DialogDescription>Detailed information about the election</DialogDescription>
         </DialogHeader>
 
