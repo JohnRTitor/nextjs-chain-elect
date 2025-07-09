@@ -23,15 +23,9 @@ export default function Dashboard() {
               </p>
             </div>
             <div className="flex flex-col gap-3 min-[400px]:flex-row">
-              <Link href="/voter" className="w-full">
+              <Link href="/elections" className="w-full">
                 <Button size="lg" className="w-full group" variant="default">
-                  Access Voter Portal
-                  <ChevronRightIcon className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Button>
-              </Link>
-              <Link href="/candidate" className="w-full">
-                <Button size="lg" variant="outline" className="w-full group">
-                  Access Candidate Portal
+                  Access Election Portal
                   <ChevronRightIcon className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
