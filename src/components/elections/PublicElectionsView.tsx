@@ -191,7 +191,11 @@ function ElectionCard({ electionId, isExpanded, onToggleExpand }: ElectionCardPr
           {isExpanded && (
             <div className="space-y-4 pt-4 border-t">
               {totalVotes > 0 ? (
-                <ElectionResults candidates={electionDetails.candidates} totalVotes={totalVotes} />
+                <ElectionResults
+                  candidates={electionDetails.candidates}
+                  totalVotes={totalVotes}
+                  electionId={electionId}
+                />
               ) : (
                 <Alert>
                   <InfoIcon className="h-4 w-4" />
@@ -212,9 +216,10 @@ function ElectionCard({ electionId, isExpanded, onToggleExpand }: ElectionCardPr
 interface ElectionResultsProps {
   candidates: Address[];
   totalVotes: number;
+  electionId: bigint;
 }
 
-function ElectionResults({ candidates, totalVotes }: ElectionResultsProps) {
+function ElectionResults({ candidates, totalVotes, electionId }: ElectionResultsProps) {
   if (candidates.length === 0) {
     return (
       <Alert>
@@ -235,6 +240,7 @@ function ElectionResults({ candidates, totalVotes }: ElectionResultsProps) {
             candidateAddress={candidateAddress}
             totalVotes={totalVotes}
             rank={index + 1}
+            electionId={electionId}
           />
         ))}
       </div>
@@ -246,16 +252,26 @@ interface CandidateResultCardProps {
   candidateAddress: Address;
   totalVotes: number;
   rank: number;
+  electionId: bigint;
 }
 
-function CandidateResultCard({ candidateAddress, totalVotes, rank }: CandidateResultCardProps) {
+import { useGetVotesOfCandidate } from "@/hooks/useElectionDatabase";
+
+function CandidateResultCard({
+  candidateAddress,
+  totalVotes,
+  rank,
+  electionId,
+}: CandidateResultCardProps) {
   const { candidateDetails, isLoading: isLoadingCandidate } =
     useGetCandidateDetails(candidateAddress);
 
-  // For this public view, we'll show a placeholder for vote counts since we don't have access to that hook
-  // In a real implementation, you might want to add a public hook for vote counts
+  const { votes, isLoading: isLoadingVotes } = useGetVotesOfCandidate(
+    electionId,
+    candidateAddress,
+  );
 
-  if (isLoadingCandidate) {
+  if (isLoadingCandidate || isLoadingVotes) {
     return (
       <div className="p-3 border rounded-lg">
         <LoadingSpinner size="sm" message="Loading candidate..." />
@@ -267,9 +283,8 @@ function CandidateResultCard({ candidateAddress, totalVotes, rank }: CandidateRe
     return null;
   }
 
-  // Mock vote percentage for demo (in real app, you'd fetch actual vote counts)
-  const mockVotes = Math.floor(Math.random() * totalVotes);
-  const percentage = totalVotes > 0 ? (mockVotes / totalVotes) * 100 : 0;
+  const voteCount = votes ? Number(votes) : 0;
+  const percentage = totalVotes > 0 ? (voteCount / totalVotes) * 100 : 0;
 
   const getInitials = (name: string) => {
     return name
@@ -306,7 +321,7 @@ function CandidateResultCard({ candidateAddress, totalVotes, rank }: CandidateRe
           </div>
         </div>
         <div className="text-right">
-          <p className="font-semibold">{mockVotes} votes</p>
+          <p className="font-semibold">{voteCount} votes</p>
           <p className="text-sm text-muted-foreground">{percentage.toFixed(1)}%</p>
         </div>
       </div>
