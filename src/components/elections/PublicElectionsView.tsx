@@ -22,6 +22,7 @@ import {
   CalendarIcon,
   ChevronRightIcon,
 } from "lucide-react";
+import { HybridDialogDrawer } from "@/components/ui/HybridDialogDrawer";
 import { Address } from "viem";
 import {
   calculateAge,
@@ -29,26 +30,6 @@ import {
   isElectionCompleted,
   getElectionStatusDisplay,
 } from "@/lib/utils/date-conversions";
-
-// Hybrid Drawer/Dialog imports
-import { useMediaQuery } from "@/hooks/use-media-query";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-  DrawerTrigger,
-  DrawerClose,
-} from "@/components/ui/drawer";
 
 export function PublicElectionsView() {
   const { electionIds, isLoading: isLoadingIds } = useGetAllElectionIds();
@@ -110,7 +91,6 @@ export function PublicElectionsView() {
 function ElectionCard({ electionId }: { electionId: bigint }) {
   const { electionDetails, isLoading } = useGetElectionDetails(electionId);
   const [open, setOpen] = useState(false);
-  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   if (isLoading) {
     return (
@@ -196,50 +176,31 @@ function ElectionCard({ electionId }: { electionId: bigint }) {
               </div>
             </div>
             {/* Hybrid Drawer/Dialog Trigger */}
-            {isDesktop ? (
-              <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>
-                  <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                    <ChevronRightIcon className="h-4 w-4" />
-                    Results
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-[600px]">
-                  <DialogHeader>
-                    <DialogTitle>Election Results</DialogTitle>
-                    <DialogDescription>
-                      {electionDetails.name} - {electionDetails.description}
-                    </DialogDescription>
-                  </DialogHeader>
-                  {ResultsContent}
-                </DialogContent>
-              </Dialog>
-            ) : (
-              <Drawer open={open} onOpenChange={setOpen}>
-                <DrawerTrigger asChild>
-                  <Button variant="ghost" size="sm" className="flex items-center gap-2">
-                    <ChevronRightIcon className="h-4 w-4" />
-                    Results
-                  </Button>
-                </DrawerTrigger>
-                <DrawerContent>
-                  <div className="mx-auto w-full max-w-md">
-                    <DrawerHeader>
-                      <DrawerTitle>Election Results</DrawerTitle>
-                      <DrawerDescription>
-                        {electionDetails.name} - {electionDetails.description}
-                      </DrawerDescription>
-                    </DrawerHeader>
-                    {ResultsContent}
-                    <DrawerClose asChild>
-                      <Button variant="outline" className="mt-4 w-full">
-                        Close
-                      </Button>
-                    </DrawerClose>
-                  </div>
-                </DrawerContent>
-              </Drawer>
-            )}
+            <HybridDialogDrawer
+              open={open}
+              onOpenChange={setOpen}
+              title="Election Results"
+              description={
+                <>
+                  {electionDetails.name} - {electionDetails.description}
+                </>
+              }
+              footer={null}
+              drawerWidthClass="max-w-md"
+              dialogWidthClass="sm:max-w-[600px]"
+              showDrawerCloseButton={true}
+            >
+              {ResultsContent}
+            </HybridDialogDrawer>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2"
+              onClick={() => setOpen(true)}
+            >
+              <ChevronRightIcon className="h-4 w-4" />
+              Results
+            </Button>
           </div>
         </div>
       </CardContent>
