@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import {
@@ -60,19 +60,15 @@ export function EditElectionDialog({
   });
 
   // Update form with election details when loaded
+  const hasReset = useRef(false);
+
   useEffect(() => {
-    if (!isLoadingDetails && electionDetails) {
-      // Prevent unnecessary reset by checking if values actually changed
-      const currentValues = form.getValues();
-      if (
-        currentValues.name !== electionDetails.name ||
-        currentValues.description !== electionDetails.description
-      ) {
-        form.reset({
-          name: electionDetails.name,
-          description: electionDetails.description,
-        });
-      }
+    if (!isLoadingDetails && electionDetails && !hasReset.current) {
+      form.reset({
+        name: electionDetails.name,
+        description: electionDetails.description,
+      });
+      hasReset.current = true;
     }
   }, [isLoadingDetails, electionDetails]);
 
