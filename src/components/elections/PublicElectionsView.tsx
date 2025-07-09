@@ -20,7 +20,12 @@ import {
   ChevronUpIcon,
 } from "lucide-react";
 import { Address } from "viem";
-import { calculateAge } from "@/lib/utils/date-conversions";
+import {
+  calculateAge,
+  isElectionActive,
+  isElectionCompleted,
+  getElectionStatusDisplay,
+} from "@/lib/utils/date-conversions";
 
 export function PublicElectionsView() {
   const { electionIds, isLoading: isLoadingIds } = useGetAllElectionIds();
@@ -116,9 +121,11 @@ function ElectionCard({ electionId, isExpanded, onToggleExpand }: ElectionCardPr
   return (
     <Card
       className={`border-2 transition-all ${
-        electionDetails.isActive
+        isElectionActive(electionDetails.status)
           ? "border-green-200 bg-green-50 dark:bg-green-950 dark:border-green-800"
-          : "border-gray-200 bg-gray-50 dark:bg-gray-950 dark:border-gray-800"
+          : isElectionCompleted(electionDetails.status)
+            ? "border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800"
+            : "border-gray-200 bg-gray-50 dark:bg-gray-950 dark:border-gray-800"
       }`}
     >
       <CardContent className="p-6">
@@ -128,8 +135,16 @@ function ElectionCard({ electionId, isExpanded, onToggleExpand }: ElectionCardPr
             <div className="space-y-2 flex-1">
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold text-lg">{electionDetails.name}</h3>
-                <Badge variant={electionDetails.isActive ? "default" : "secondary"}>
-                  {electionDetails.isActive ? "Active" : "Closed"}
+                <Badge
+                  variant={
+                    isElectionActive(electionDetails.status)
+                      ? "default"
+                      : isElectionCompleted(electionDetails.status)
+                        ? "outline"
+                        : "secondary"
+                  }
+                >
+                  {getElectionStatusDisplay(electionDetails.status)}
                 </Badge>
               </div>
               <p className="text-sm text-muted-foreground">{electionDetails.description}</p>

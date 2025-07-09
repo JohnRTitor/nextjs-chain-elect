@@ -31,6 +31,11 @@ import { useGetAllCandidates, useGetCandidateDetails } from "@/hooks/useCandidat
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { PlusCircleIcon, MinusCircleIcon, SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import {
+  isElectionActive,
+  isElectionNew,
+  getElectionStatusDisplay,
+} from "@/lib/utils/date-conversions";
 
 interface ManageCandidatesDialogProps {
   open: boolean;
@@ -115,7 +120,7 @@ export function ManageCandidatesDialog({
         // Reset confirmation states first
         if (isEnrollConfirmed) resetEnrollConfirmation();
         if (isWithdrawConfirmed) resetWithdrawConfirmation();
-        
+
         // Then perform the updates
         await refetchElection();
         await refetchEnrolled();
@@ -124,12 +129,12 @@ export function ManageCandidatesDialog({
       handleSuccess();
     }
   }, [
-    isEnrollConfirmed, 
-    isWithdrawConfirmed, 
-    refetchElection, 
-    refetchEnrolled, 
-    onSuccessAction, 
-    resetEnrollConfirmation, 
+    isEnrollConfirmed,
+    isWithdrawConfirmed,
+    refetchElection,
+    refetchEnrolled,
+    onSuccessAction,
+    resetEnrollConfirmation,
     resetWithdrawConfirmation
   ]);
 
@@ -154,11 +159,12 @@ export function ManageCandidatesDialog({
           <DialogTitle>Manage Election Candidates</DialogTitle>
           <DialogDescription>
             Add or remove candidates for this election.
-            {electionDetails?.isActive && (
+            !isElectionNew(electionDetails?.status || 0) && (
               <span className="block mt-2 text-amber-600 dark:text-amber-400">
-                Warning: This election is currently active. Changes to candidates may affect
-                voting.
+                Warning: This election is {getElectionStatusDisplay(electionDetails?.status || 0).toLowerCase()}. Changes to candidates may affect
+                the election process.
               </span>
+            )
             )}
           </DialogDescription>
         </DialogHeader>
@@ -216,6 +222,7 @@ export function ManageCandidatesDialog({
                             address={address}
                             onWithdraw={handleWithdraw}
                             isProcessing={isProcessing}
+                            canModify={isElectionNew(electionDetails?.status || 0)}
                           />
                         ))}
                       </TableBody>
@@ -246,6 +253,7 @@ export function ManageCandidatesDialog({
                             address={address}
                             onEnroll={handleEnroll}
                             isProcessing={isProcessing}
+                            canModify={isElectionNew(electionDetails?.status || 0)}
                           />
                         ))}
                       </TableBody>
@@ -265,9 +273,10 @@ interface EnrolledCandidateRowProps {
   address: Address;
   onWithdraw: (address: Address) => void;
   isProcessing: boolean;
+  canModify: boolean;
 }
 
-function EnrolledCandidateRow({ address, onWithdraw, isProcessing }: EnrolledCandidateRowProps) {
+function EnrolledCandidateRow({ address, onWithdraw, isProcessing, canModify }: EnrolledCandidateRowProps) {
   const { candidateDetails, isLoading } = useGetCandidateDetails(address);
 
   // Format wallet address for display
@@ -285,8 +294,9 @@ function EnrolledCandidateRow({ address, onWithdraw, isProcessing }: EnrolledCan
           variant="outline"
           size="sm"
           onClick={() => onWithdraw(address)}
-          disabled={isProcessing}
+          disabled={isProcessing || !canModify}
           className="text-destructive hover:text-destructive"
+          title={!canModify ? "Can only modify candidates in NEW elections" : "Remove candidate"}
         >
           <MinusCircleIcon className="h-4 w-4 mr-2" />
           Remove
@@ -300,9 +310,10 @@ interface AvailableCandidateRowProps {
   address: Address;
   onEnroll: (address: Address) => void;
   isProcessing: boolean;
+  canModify: boolean;
 }
 
-function AvailableCandidateRow({ address, onEnroll, isProcessing }: AvailableCandidateRowProps) {
+function AvailableCandidateRow({ address, onEnroll, isProcessing, canModify }: AvailableCandidateRowProps) {
   const { candidateDetails, isLoading } = useGetCandidateDetails(address);
 
   // Format wallet address for display
@@ -320,8 +331,9 @@ function AvailableCandidateRow({ address, onEnroll, isProcessing }: AvailableCan
           variant="outline"
           size="sm"
           onClick={() => onEnroll(address)}
-          disabled={isProcessing}
+          disabled={isProcessing || !canModify}
           className="text-green-600 hover:text-green-700 dark:text-green-500 dark:hover:text-green-400"
+          title={!canModify ? "Can only modify candidates in NEW elections" : "Enroll candidate"}
         >
           <PlusCircleIcon className="h-4 w-4 mr-2" />
           Enroll

@@ -14,8 +14,13 @@ import {
   CheckCircle2Icon,
   UsersIcon,
   CalendarIcon,
-  ArrowRightIcon
+  ArrowRightIcon,
 } from "lucide-react";
+import {
+  isElectionActive,
+  isElectionCompleted,
+  getElectionStatusDisplay,
+} from "@/lib/utils/date-conversions";
 
 export function VoterElectionsView() {
   const { electionIds, isLoading: isLoadingIds } = useGetAllElectionIds();
@@ -49,7 +54,8 @@ export function VoterElectionsView() {
             <InfoIcon className="h-4 w-4" />
             <AlertTitle>No Elections Available</AlertTitle>
             <AlertDescription>
-              There are currently no elections available for voting. Check back later for upcoming elections.
+              There are currently no elections available for voting. Check back later for upcoming
+              elections.
             </AlertDescription>
           </Alert>
         </CardContent>
@@ -126,9 +132,11 @@ function VoterElectionCard({ electionId, onSelectElection }: VoterElectionCardPr
   return (
     <Card
       className={`border-2 transition-all hover:shadow-md ${
-        electionDetails.isActive
+        isElectionActive(electionDetails.status)
           ? "border-green-200 bg-green-50 dark:bg-green-950 dark:border-green-800 hover:border-green-300"
-          : "border-gray-200 bg-gray-50 dark:bg-gray-950 dark:border-gray-800 opacity-75"
+          : isElectionCompleted(electionDetails.status)
+            ? "border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800 opacity-90"
+            : "border-gray-200 bg-gray-50 dark:bg-gray-950 dark:border-gray-800 opacity-75"
       }`}
     >
       <CardContent className="p-6">
@@ -136,12 +144,20 @@ function VoterElectionCard({ electionId, onSelectElection }: VoterElectionCardPr
           <div className="space-y-3 flex-1">
             <div className="flex items-center gap-2">
               <h3 className="font-semibold text-lg">{electionDetails.name}</h3>
-              <Badge variant={electionDetails.isActive ? "default" : "secondary"}>
-                {electionDetails.isActive ? "Active" : "Closed"}
+              <Badge
+                variant={
+                  isElectionActive(electionDetails.status)
+                    ? "default"
+                    : isElectionCompleted(electionDetails.status)
+                      ? "outline"
+                      : "secondary"
+                }
+              >
+                {getElectionStatusDisplay(electionDetails.status)}
               </Badge>
-              {!electionDetails.isActive && (
+              {!isElectionActive(electionDetails.status) && (
                 <Badge variant="outline" className="text-gray-500">
-                  Voting Ended
+                  {isElectionCompleted(electionDetails.status) ? "Voting Ended" : "Not Open"}
                 </Badge>
               )}
             </div>
@@ -162,13 +178,16 @@ function VoterElectionCard({ electionId, onSelectElection }: VoterElectionCardPr
               <div className="flex items-center gap-1">
                 <CalendarIcon className="h-4 w-4" />
                 <span>
-                  Created {new Date(Number(electionDetails.registrationTimestamp) * 1000).toLocaleDateString()}
+                  Created{" "}
+                  {new Date(
+                    Number(electionDetails.registrationTimestamp) * 1000,
+                  ).toLocaleDateString()}
                 </span>
               </div>
             </div>
 
             {/* Election Status Info */}
-            {electionDetails.isActive ? (
+            {isElectionActive(electionDetails.status) ? (
               <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg border border-green-200 dark:border-green-800">
                 <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
                   <CheckCircle2Icon className="h-4 w-4" />
@@ -178,21 +197,31 @@ function VoterElectionCard({ electionId, onSelectElection }: VoterElectionCardPr
                   This election is currently active and accepting votes
                 </p>
               </div>
+            ) : isElectionCompleted(electionDetails.status) ? (
+              <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+                  <CheckCircle2Icon className="h-4 w-4" />
+                  <span className="text-sm font-medium">Election completed</span>
+                </div>
+                <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                  Voting has ended and results are final
+                </p>
+              </div>
             ) : (
               <div className="bg-gray-100 dark:bg-gray-900/30 p-3 rounded-lg border border-gray-200 dark:border-gray-800">
                 <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                   <InfoIcon className="h-4 w-4" />
-                  <span className="text-sm font-medium">Election closed</span>
+                  <span className="text-sm font-medium">Election not active</span>
                 </div>
                 <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                  This election is no longer accepting votes
+                  This election is not currently accepting votes
                 </p>
               </div>
             )}
           </div>
 
           <div className="ml-6">
-            {electionDetails.isActive ? (
+            {isElectionActive(electionDetails.status) ? (
               <Button
                 onClick={onSelectElection}
                 className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
@@ -202,13 +231,9 @@ function VoterElectionCard({ electionId, onSelectElection }: VoterElectionCardPr
                 <ArrowRightIcon className="h-4 w-4" />
               </Button>
             ) : (
-              <Button
-                variant="outline"
-                disabled
-                className="flex items-center gap-2"
-              >
+              <Button variant="outline" disabled className="flex items-center gap-2">
                 <VoteIcon className="h-4 w-4" />
-                Election Closed
+                {isElectionCompleted(electionDetails.status) ? "Voting Ended" : "Not Active"}
               </Button>
             )}
           </div>

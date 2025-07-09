@@ -25,6 +25,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useGetElectionDetails, useAdminUpdateElection } from "@/hooks/useElectionDatabase";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { ElectionFormSchema, ElectionFormValues } from "@/lib/schemas/election-form";
+import { isElectionNew, getElectionStatusDisplay } from "@/lib/utils/date-conversions";
 
 interface EditElectionDialogProps {
   open: boolean;
@@ -45,7 +46,8 @@ export function EditElectionDialog({
   );
 
   // Hook for updating election
-  const { adminUpdateElection, isPending, isConfirming, isConfirmed, resetConfirmation } = useAdminUpdateElection();
+  const { adminUpdateElection, isPending, isConfirming, isConfirmed, resetConfirmation } =
+    useAdminUpdateElection();
 
   // Form setup
   const form = useForm<ElectionFormValues>({
@@ -89,8 +91,9 @@ export function EditElectionDialog({
     isPending ||
     isConfirming ||
     isLoadingDetails ||
-    electionDetails?.isActive ||
-    (electionDetails?.totalVotes && electionDetails.totalVotes > 0n);
+    !electionDetails ||
+    !isElectionNew(electionDetails.status) ||
+    electionDetails.totalVotes > 0n;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChangeAction}>
@@ -111,14 +114,16 @@ export function EditElectionDialog({
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               {/* Warning message if election cannot be edited */}
-              {(electionDetails.isActive || electionDetails.totalVotes > 0n) && (
+              {(!isElectionNew(electionDetails.status) || electionDetails.totalVotes > 0n) && (
                 <div className="p-3 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-md text-amber-700 dark:text-amber-300">
                   <h4 className="text-sm font-medium mb-1">
-                    {electionDetails.isActive ? "Active Election" : "Votes Recorded"}
+                    {!isElectionNew(electionDetails.status)
+                      ? `${getElectionStatusDisplay(electionDetails.status)} Election`
+                      : "Votes Recorded"}
                   </h4>
                   <p className="text-sm">
-                    {electionDetails.isActive
-                      ? "This election is currently active and cannot be modified. Close the election to make changes."
+                    {!isElectionNew(electionDetails.status)
+                      ? "This election is not in NEW status and cannot be modified. Only NEW elections can be edited."
                       : "This election has recorded votes and cannot be modified to maintain integrity."}
                   </p>
                 </div>

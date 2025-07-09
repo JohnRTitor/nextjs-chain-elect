@@ -14,6 +14,7 @@ import {
 import { useGetElectionDetails, useAdminDeleteElection } from "@/hooks/useElectionDatabase";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { Loader2Icon } from "lucide-react";
+import { isElectionNew } from "@/lib/utils/date-conversions";
 
 interface DeleteElectionDialogProps {
   open: boolean;
@@ -29,7 +30,8 @@ export function DeleteElectionDialog({
   onSuccessAction,
 }: DeleteElectionDialogProps) {
   const { electionDetails, isLoading } = useGetElectionDetails(electionId || undefined);
-  const { adminDeleteElection, isPending, isConfirming, isConfirmed, resetConfirmation } = useAdminDeleteElection();
+  const { adminDeleteElection, isPending, isConfirming, isConfirmed, resetConfirmation } =
+    useAdminDeleteElection();
 
   // Listen for successful deletion
   useEffect(() => {
@@ -48,9 +50,9 @@ export function DeleteElectionDialog({
     await adminDeleteElection(electionId);
   };
 
-  // Check if the election can be deleted
+  // Check if the election can be deleted (only NEW elections with no votes)
   const canDelete =
-    electionDetails && !electionDetails.isActive && electionDetails.totalVotes === 0n;
+    electionDetails && isElectionNew(electionDetails.status) && electionDetails.totalVotes === 0n;
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChangeAction}>
@@ -62,7 +64,8 @@ export function DeleteElectionDialog({
               <LoadingSpinner message="Loading election details..." />
             ) : !canDelete ? (
               <div className="text-destructive font-medium">
-                This election cannot be deleted because it is either active or has recorded votes.
+                This election cannot be deleted because it is not in NEW status or has recorded
+                votes.
               </div>
             ) : (
               <div>

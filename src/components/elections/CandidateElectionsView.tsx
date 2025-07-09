@@ -20,6 +20,12 @@ import {
   VoteIcon,
 } from "lucide-react";
 import { useAccount } from "wagmi";
+import {
+  isElectionActive,
+  isElectionNew,
+  isElectionCompleted,
+  getElectionStatusDisplay,
+} from "@/lib/utils/date-conversions";
 
 export function CandidateElectionsView() {
   const { electionIds, isLoading: isLoadingIds } = useGetAllElectionIds();
@@ -130,6 +136,9 @@ function CandidateElectionCard({
   const isTransactionPending =
     isEnrolling || isWithdrawing || isConfirmingEnroll || isConfirmingWithdraw;
 
+  // Check if candidate enrollment/withdrawal is allowed (only in NEW state)
+  const canModifyCandidates = electionDetails && isElectionNew(electionDetails.status);
+
   // Handle enrollment confirmation
   React.useEffect(() => {
     if (isEnrollConfirmed || isWithdrawConfirmed) {
@@ -178,11 +187,13 @@ function CandidateElectionCard({
 
       <Card
         className={`border-2 transition-all ${
-          electionDetails.isActive
+          isElectionActive(electionDetails.status)
             ? isEnrolled
               ? "border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800"
               : "border-green-200 bg-green-50 dark:bg-green-950 dark:border-green-800"
-            : "border-gray-200 bg-gray-50 dark:bg-gray-950 dark:border-gray-800 opacity-75"
+            : isElectionCompleted(electionDetails.status)
+              ? "border-purple-200 bg-purple-50 dark:bg-purple-950 dark:border-purple-800 opacity-90"
+              : "border-gray-200 bg-gray-50 dark:bg-gray-950 dark:border-gray-800 opacity-75"
         }`}
       >
         <CardContent className="p-6">
@@ -190,8 +201,16 @@ function CandidateElectionCard({
             <div className="space-y-3 flex-1">
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold text-lg">{electionDetails.name}</h3>
-                <Badge variant={electionDetails.isActive ? "default" : "secondary"}>
-                  {electionDetails.isActive ? "Active" : "Closed"}
+                <Badge
+                  variant={
+                    isElectionActive(electionDetails.status)
+                      ? "default"
+                      : isElectionCompleted(electionDetails.status)
+                        ? "outline"
+                        : "secondary"
+                  }
+                >
+                  {getElectionStatusDisplay(electionDetails.status)}
                 </Badge>
                 {isEnrolled && (
                   <Badge variant="outline" className="text-blue-600 border-blue-600">
@@ -226,7 +245,7 @@ function CandidateElectionCard({
               </div>
 
               {/* Election Status Info */}
-              {electionDetails.isActive ? (
+              {isElectionActive(electionDetails.status) ? (
                 isEnrolled ? (
                   <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
                     <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
@@ -238,13 +257,35 @@ function CandidateElectionCard({
                     </p>
                   </div>
                 ) : (
+                  <div className="bg-amber-100 dark:bg-amber-900/30 p-3 rounded-lg border border-amber-200 dark:border-amber-800">
+                    <div className="flex items-center gap-2 text-amber-700 dark:text-amber-300">
+                      <InfoIcon className="h-4 w-4" />
+                      <span className="text-sm font-medium">Election is active</span>
+                    </div>
+                    <p className="text-xs text-amber-600 dark:text-amber-400 mt-1">
+                      Candidate enrollment is closed during active voting
+                    </p>
+                  </div>
+                )
+              ) : isElectionNew(electionDetails.status) ? (
+                isEnrolled ? (
+                  <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
+                    <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
+                      <CheckCircle2Icon className="h-4 w-4" />
+                      <span className="text-sm font-medium">You are enrolled as a candidate</span>
+                    </div>
+                    <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                      You can withdraw before the election becomes active
+                    </p>
+                  </div>
+                ) : (
                   <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg border border-green-200 dark:border-green-800">
                     <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
                       <UserPlusIcon className="h-4 w-4" />
                       <span className="text-sm font-medium">Ready for enrollment</span>
                     </div>
                     <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                      You can enroll as a candidate in this active election
+                      You can enroll as a candidate in this new election
                     </p>
                   </div>
                 )
@@ -252,12 +293,14 @@ function CandidateElectionCard({
                 <div className="bg-gray-100 dark:bg-gray-900/30 p-3 rounded-lg border border-gray-200 dark:border-gray-800">
                   <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                     <InfoIcon className="h-4 w-4" />
-                    <span className="text-sm font-medium">Election closed</span>
+                    <span className="text-sm font-medium">
+                      Election {getElectionStatusDisplay(electionDetails.status).toLowerCase()}
+                    </span>
                   </div>
                   <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                     {isEnrolled
                       ? "You were enrolled as a candidate in this election"
-                      : "This election is no longer accepting new candidates"}
+                      : "This election is not accepting new candidates"}
                   </p>
                 </div>
               )}
@@ -276,7 +319,7 @@ function CandidateElectionCard({
             </div>
 
             <div className="ml-6">
-              {electionDetails.isActive ? (
+              {canModifyCandidates ? (
                 isEnrolled ? (
                   <Button
                     variant="outline"
@@ -308,7 +351,11 @@ function CandidateElectionCard({
               ) : (
                 <Button variant="outline" disabled className="flex items-center gap-2">
                   <InfoIcon className="h-4 w-4" />
-                  Election Closed
+                  {isElectionActive(electionDetails.status)
+                    ? "Voting Active"
+                    : isElectionCompleted(electionDetails.status)
+                      ? "Election Completed"
+                      : "Election Closed"}
                 </Button>
               )}
             </div>

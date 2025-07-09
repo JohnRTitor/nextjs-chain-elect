@@ -248,6 +248,29 @@ export function useAdminCompleteElection() {
   };
 }
 
+export function useAdminCloseElection() {
+  const { execute, isPending, isConfirming, isConfirmed, hash, resetConfirmation } =
+    useElectionDatabaseWriteFunction("adminCompleteElection");
+
+  const adminCloseElection = async (electionId: bigint) => {
+    return execute([electionId], {
+      loading: "Closing election...",
+      success: "Election closed! Waiting for blockchain confirmation...",
+      error: "Failed to close election",
+      confirmed: "Election has been closed successfully!",
+    });
+  };
+
+  return {
+    adminCloseElection,
+    isPending,
+    isConfirming,
+    isConfirmed,
+    hash,
+    resetConfirmation,
+  };
+}
+
 export function useAdminArchiveElection() {
   const { execute, isPending, isConfirming, isConfirmed, hash, resetConfirmation } =
     useElectionDatabaseWriteFunction("adminArchiveElection");

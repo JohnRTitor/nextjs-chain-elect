@@ -13,6 +13,11 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { Address } from "viem";
+import {
+  isElectionActive,
+  isElectionCompleted,
+  getElectionStatusDisplay,
+} from "@/lib/utils/date-conversions";
 
 interface ElectionDetailsDialogProps {
   open: boolean;
@@ -48,8 +53,16 @@ export function ElectionDetailsDialog({
             <div className="grid gap-4">
               <div>
                 <h4 className="mb-1 text-sm font-medium text-muted-foreground">Status</h4>
-                <Badge variant={electionDetails.isActive ? "default" : "secondary"}>
-                  {electionDetails.isActive ? "Active" : "Inactive"}
+                <Badge
+                  variant={
+                    isElectionActive(electionDetails.status)
+                      ? "default"
+                      : isElectionCompleted(electionDetails.status)
+                        ? "outline"
+                        : "secondary"
+                  }
+                >
+                  {getElectionStatusDisplay(electionDetails.status)}
                 </Badge>
               </div>
 
@@ -84,11 +97,18 @@ export function ElectionDetailsDialog({
             {/* Winner section */}
             {electionDetails.totalVotes > 0n && (
               <div className="border-t pt-4">
-                <h4 className="mb-2 text-sm font-medium">Current Standing</h4>
+                <h4 className="mb-2 text-sm font-medium">
+                  {isElectionCompleted(electionDetails.status)
+                    ? "Final Results"
+                    : "Current Standing"}
+                </h4>
                 {isWinnerLoading ? (
                   <LoadingSpinner message="Calculating results..." />
                 ) : winner && winner !== "0x0000000000000000000000000000000000000000" ? (
-                  <WinnerCard winnerAddress={winner} />
+                  <WinnerCard
+                    winnerAddress={winner}
+                    isCompleted={isElectionCompleted(electionDetails.status)}
+                  />
                 ) : (
                   <p className="text-muted-foreground">No winner determined yet.</p>
                 )}
@@ -118,9 +138,10 @@ export function ElectionDetailsDialog({
 
 interface WinnerCardProps {
   winnerAddress: Address;
+  isCompleted?: boolean;
 }
 
-function WinnerCard({ winnerAddress }: WinnerCardProps) {
+function WinnerCard({ winnerAddress, isCompleted = false }: WinnerCardProps) {
   const { candidateDetails, isLoading } = useGetCandidateDetails(winnerAddress);
 
   if (isLoading || !candidateDetails) {
@@ -131,7 +152,9 @@ function WinnerCard({ winnerAddress }: WinnerCardProps) {
     <Card className="bg-primary/5 border-primary/20">
       <CardContent className="p-4">
         <div className="flex flex-col">
-          <p className="text-sm font-medium text-muted-foreground">Current Leader</p>
+          <p className="text-sm font-medium text-muted-foreground">
+            {isCompleted ? "Winner" : "Current Leader"}
+          </p>
           <p className="text-lg font-bold">{candidateDetails.name}</p>
           <p className="text-xs font-mono text-muted-foreground mt-1">
             {winnerAddress.substring(0, 6)}...{winnerAddress.substring(winnerAddress.length - 4)}

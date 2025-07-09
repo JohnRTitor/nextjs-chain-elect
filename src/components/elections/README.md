@@ -46,6 +46,28 @@ The elections page implements a sophisticated access control system:
 
 Users can have multiple roles (e.g., both voter and candidate) and can switch between views using the toggle buttons.
 
+## Election Status System
+
+The elections page implements a comprehensive status management system:
+
+1. **NEW (0)**: Election created, candidates can enroll/withdraw, no voting allowed
+2. **ACTIVE (1)**: Election open for voting, candidate enrollment locked
+3. **COMPLETED (2)**: Election finished, results finalized, no further changes
+4. **ARCHIVED (3)**: Election archived/cancelled, treated as inactive
+
+### Status Transitions
+
+- **NEW → ACTIVE**: Admin opens election for voting (requires at least one candidate)
+- **ACTIVE → COMPLETED**: Admin completes election (requires at least one vote)
+- **Any Status → ARCHIVED**: Admin can archive any election except COMPLETED and already ARCHIVED ones
+
+### UI Status Indicators
+
+- **NEW**: Secondary badge, "New" status
+- **ACTIVE**: Default/primary badge, "Active" status with green styling
+- **COMPLETED**: Outline badge, "Completed" status with blue styling
+- **ARCHIVED**: Destructive badge, "Archived" status with red/orange styling
+
 ## Integration
 
 - Replaces the previous `/vote` page
@@ -60,6 +82,9 @@ Users can have multiple roles (e.g., both voter and candidate) and can switch be
 - **Real-time Updates**: Shows current election status, vote counts, and candidate enrollments
 - **Responsive Design**: Works on all device sizes
 - **Blockchain Integration**: All actions are recorded on the blockchain with proper transaction handling
+- **Election Status Management**: Supports NEW, ACTIVE, COMPLETED, and ARCHIVED election states
+- **Candidate Enrollment Control**: Candidates can only enroll/withdraw during NEW status
+- **Voting Control**: Voting only allowed during ACTIVE status
 
 ## Usage
 

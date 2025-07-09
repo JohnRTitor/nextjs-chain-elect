@@ -31,7 +31,16 @@ import {
   PlayIcon,
   PauseIcon,
   UsersIcon,
+  CheckCircleIcon,
+  ArchiveIcon,
 } from "lucide-react";
+import {
+  isElectionActive,
+  isElectionNew,
+  isElectionCompleted,
+  isElectionArchived,
+  getElectionStatusDisplay,
+} from "@/lib/utils/date-conversions";
 
 interface ElectionListProps {
   electionIds: bigint[];
@@ -191,22 +200,31 @@ function ElectionRow({
   } = useAdminOpenElection();
 
   const {
-    adminCloseElection,
-    isPending: isClosePending,
-    isConfirming: isCloseConfirming,
-    isConfirmed: isCloseConfirmed,
-    resetConfirmation: resetCloseConfirmation,
-  } = useAdminCloseElection();
+    adminCompleteElection,
+    isPending: isCompletePending,
+    isConfirming: isCompleteConfirming,
+    isConfirmed: isCompleteConfirmed,
+    resetConfirmation: resetCompleteConfirmation,
+  } = useAdminCompleteElection();
+
+  const {
+    adminArchiveElection,
+    isPending: isArchivePending,
+    isConfirming: isArchiveConfirming,
+    isConfirmed: isArchiveConfirmed,
+    resetConfirmation: resetArchiveConfirmation,
+  } = useAdminArchiveElection();
 
   // Handle election state changes
   useEffect(() => {
-    if (isOpenConfirmed || isCloseConfirmed) {
+    if (isOpenConfirmed || isCompleteConfirmed || isArchiveConfirmed) {
       // Execute these in a single render cycle
       const handleSuccess = async () => {
         // Reset confirmation states first
         if (isOpenConfirmed) resetOpenConfirmation();
-        if (isCloseConfirmed) resetCloseConfirmation();
-        
+        if (isCompleteConfirmed) resetCompleteConfirmation();
+        if (isArchiveConfirmed) resetArchiveConfirmation();
+
         // Then update UI state
         setIsToggling(false);
         await refetch();
@@ -214,21 +232,41 @@ function ElectionRow({
       };
       handleSuccess();
     }
-  }, [isOpenConfirmed, isCloseConfirmed, refetch, onRefresh, resetOpenConfirmation, resetCloseConfirmation]);
+  }, [
+    isOpenConfirmed,
+    isCompleteConfirmed,
+    isArchiveConfirmed,
+    refetch,
+    onRefresh,
+    resetOpenConfirmation,
+    resetCompleteConfirmation,
+    resetArchiveConfirmation,
+  ]);
 
   const toggleElectionStatus = async () => {
     if (!electionDetails) return;
 
     setIsToggling(true);
-    if (electionDetails.isActive) {
-      await adminCloseElection(electionId);
-    } else {
+    if (isElectionActive(electionDetails.status)) {
+      await adminCompleteElection(electionId);
+    } else if (isElectionNew(electionDetails.status)) {
       await adminOpenElection(electionId);
     }
   };
 
+  const archiveElection = async (electionId: bigint) => {
+    setIsToggling(true);
+    await adminArchiveElection(electionId);
+  };
+
   const isProcessing =
-    isToggling || isOpenPending || isOpenConfirming || isClosePending || isCloseConfirming;
+    isToggling ||
+    isOpenPending ||
+    isOpenConfirming ||
+    isCompletePending ||
+    isCompleteConfirming ||
+    isArchivePending ||
+    isArchiveConfirming;
 
   return (
     <TableRow>
@@ -239,10 +277,22 @@ function ElectionRow({
       <TableCell>
         {isLoading ? (
           <LoadingSpinner size="sm" />
-        ) : (
-          <Badge variant={electionDetails?.isActive ? "default" : "secondary"}>
-            {electionDetails?.isActive ? "Active" : "Inactive"}
+        ) : electionDetails ? (
+          <Badge
+            variant={
+              isElectionActive(electionDetails.status)
+                ? "default"
+                : isElectionCompleted(electionDetails.status)
+                  ? "outline"
+                  : isElectionArchived(electionDetails.status)
+                    ? "destructive"
+                    : "secondary"
+            }
+          >
+            {getElectionStatusDisplay(electionDetails.status)}
           </Badge>
+        ) : (
+          <Badge variant="secondary">Unknown</Badge>
         )}
       </TableCell>
       <TableCell>
@@ -253,21 +303,55 @@ function ElectionRow({
       </TableCell>
       <TableCell className="text-right">
         <div className="flex justify-end gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            disabled={isLoading || isProcessing || !electionDetails}
-            onClick={toggleElectionStatus}
-            title={electionDetails?.isActive ? "Close Election" : "Open Election"}
-          >
-            {isProcessing ? (
-              <LoadingSpinner size="sm" />
-            ) : electionDetails?.isActive ? (
-              <PauseIcon className="h-4 w-4 text-amber-500" />
-            ) : (
-              <PlayIcon className="h-4 w-4 text-green-500" />
+          {electionDetails && isElectionNew(electionDetails.status) && (
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={isLoading || isProcessing}
+              onClick={toggleElectionStatus}
+              title="Open Election"
+            >
+              {isProcessing ? (
+                <LoadingSpinner size="sm" />
+              ) : (
+                <PlayIcon className="h-4 w-4 text-green-500" />
+              )}
+            </Button>
+          )}
+
+          {electionDetails && isElectionActive(electionDetails.status) && (
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={isLoading || isProcessing || electionDetails.totalVotes === 0n}
+              onClick={toggleElectionStatus}
+              title="Complete Election"
+            >
+              {isProcessing ? (
+                <LoadingSpinner size="sm" />
+              ) : (
+                <CheckCircleIcon className="h-4 w-4 text-blue-500" />
+              )}
+            </Button>
+          )}
+
+          {electionDetails &&
+            !isElectionCompleted(electionDetails.status) &&
+            !isElectionArchived(electionDetails.status) && (
+              <Button
+                variant="ghost"
+                size="icon"
+                disabled={isLoading || isProcessing}
+                onClick={() => archiveElection(electionId)}
+                title="Archive Election"
+              >
+                {isProcessing ? (
+                  <LoadingSpinner size="sm" />
+                ) : (
+                  <ArchiveIcon className="h-4 w-4 text-orange-500" />
+                )}
+              </Button>
             )}
-          </Button>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -290,8 +374,9 @@ function ElectionRow({
                 onClick={onDelete}
                 className="text-destructive"
                 disabled={
-                  electionDetails?.isActive ||
-                  !!(electionDetails?.totalVotes && electionDetails.totalVotes > 0n)
+                  !electionDetails ||
+                  !isElectionNew(electionDetails.status) ||
+                  electionDetails.totalVotes > 0n
                 }
               >
                 <Trash2Icon className="mr-2 h-4 w-4" /> Delete Election
@@ -305,4 +390,8 @@ function ElectionRow({
 }
 
 // Import required hooks
-import { useAdminOpenElection, useAdminCloseElection } from "@/hooks/useElectionDatabase";
+import {
+  useAdminOpenElection,
+  useAdminCompleteElection,
+  useAdminArchiveElection,
+} from "@/hooks/useElectionDatabase";

@@ -17,6 +17,7 @@ import { ArrowLeftIcon, CheckCircle2Icon, InfoIcon } from "lucide-react";
 import { CandidateSelection } from "./CandidateSelection";
 import { VoteConfirmation } from "./VoteConfirmation";
 import { VotingResults } from "./VotingResults";
+import { isElectionActive, getElectionStatusDisplay } from "@/lib/utils/date-conversions";
 
 interface VotingSessionProps {
   electionId: bigint;
@@ -109,7 +110,7 @@ export function VotingSession({ electionId, onBackToSelectionAction }: VotingSes
     );
   }
 
-  if (!electionDetails.isActive && !hasVoted) {
+  if (!isElectionActive(electionDetails.status) && !hasVoted) {
     return (
       <Card>
         <CardHeader>
@@ -118,7 +119,7 @@ export function VotingSession({ electionId, onBackToSelectionAction }: VotingSes
               <ArrowLeftIcon className="h-4 w-4" />
             </Button>
             <CardTitle>{electionDetails.name}</CardTitle>
-            <Badge variant="secondary">Inactive</Badge>
+            <Badge variant="secondary">{getElectionStatusDisplay(electionDetails.status)}</Badge>
           </div>
         </CardHeader>
         <CardContent>
@@ -151,8 +152,8 @@ export function VotingSession({ electionId, onBackToSelectionAction }: VotingSes
             </div>
             <div className="flex items-center gap-2">
               {hasVoted && <CheckCircle2Icon className="h-5 w-5 text-green-600" />}
-              <Badge variant={electionDetails.isActive ? "default" : "secondary"}>
-                {hasVoted ? "Voted" : electionDetails.isActive ? "Active" : "Inactive"}
+              <Badge variant={isElectionActive(electionDetails.status) ? "default" : "secondary"}>
+                {hasVoted ? "Voted" : getElectionStatusDisplay(electionDetails.status)}
               </Badge>
             </div>
           </div>
