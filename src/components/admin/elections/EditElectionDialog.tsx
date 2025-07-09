@@ -72,6 +72,10 @@ export function EditElectionDialog({
     }
   }, [isLoadingDetails, electionDetails]);
 
+  useEffect(() => {
+    hasReset.current = false;
+  }, [electionId]);
+
   // Listen for successful update
   useEffect(() => {
     if (isConfirmed) {
