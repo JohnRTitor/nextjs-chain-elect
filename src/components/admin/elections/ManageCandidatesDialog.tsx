@@ -77,14 +77,14 @@ export function ManageCandidatesDialog({
     isPending: isEnrollPending,
     isConfirming: isEnrollConfirming,
     isConfirmed: isEnrollConfirmed,
-    resetConfirmation: resetEnrollConfirmation
+    resetConfirmation: resetEnrollConfirmation,
   } = useAdminEnrollCandidate();
   const {
     adminWithdrawCandidate,
     isPending: isWithdrawPending,
     isConfirming: isWithdrawConfirming,
     isConfirmed: isWithdrawConfirmed,
-    resetConfirmation: resetWithdrawConfirmation
+    resetConfirmation: resetWithdrawConfirmation,
   } = useAdminWithdrawCandidate();
 
   // Computed list of available candidates (those not already enrolled)
@@ -135,7 +135,7 @@ export function ManageCandidatesDialog({
     refetchEnrolled,
     onSuccessAction,
     resetEnrollConfirmation,
-    resetWithdrawConfirmation
+    resetWithdrawConfirmation,
   ]);
 
   // Handle enrolling a candidate
@@ -159,12 +159,11 @@ export function ManageCandidatesDialog({
           <DialogTitle>Manage Election Candidates</DialogTitle>
           <DialogDescription>
             Add or remove candidates for this election.
-            !isElectionNew(electionDetails?.status || 0) && (
+            {isElectionNew(electionDetails?.status || 0) && (
               <span className="block mt-2 text-amber-600 dark:text-amber-400">
-                Warning: This election is {getElectionStatusDisplay(electionDetails?.status || 0).toLowerCase()}. Changes to candidates may affect
-                the election process.
+                Warning: This election is new. Changes to candidates may affect the election
+                process.
               </span>
-            )
             )}
           </DialogDescription>
         </DialogHeader>
@@ -276,7 +275,12 @@ interface EnrolledCandidateRowProps {
   canModify: boolean;
 }
 
-function EnrolledCandidateRow({ address, onWithdraw, isProcessing, canModify }: EnrolledCandidateRowProps) {
+function EnrolledCandidateRow({
+  address,
+  onWithdraw,
+  isProcessing,
+  canModify,
+}: EnrolledCandidateRowProps) {
   const { candidateDetails, isLoading } = useGetCandidateDetails(address);
 
   // Format wallet address for display
@@ -313,7 +317,12 @@ interface AvailableCandidateRowProps {
   canModify: boolean;
 }
 
-function AvailableCandidateRow({ address, onEnroll, isProcessing, canModify }: AvailableCandidateRowProps) {
+function AvailableCandidateRow({
+  address,
+  onEnroll,
+  isProcessing,
+  canModify,
+}: AvailableCandidateRowProps) {
   const { candidateDetails, isLoading } = useGetCandidateDetails(address);
 
   // Format wallet address for display
