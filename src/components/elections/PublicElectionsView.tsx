@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useGetAllElectionIds, useGetElectionDetails } from "@/hooks/useElectionDatabase";
+import {
+  useGetAllElectionIds,
+  useGetElectionDetails,
+  useGetVotesOfCandidate,
+} from "@/hooks/useElectionDatabase";
 import { useGetCandidateDetails } from "@/hooks/useCandidateDatabase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,8 +20,7 @@ import {
   UsersIcon,
   VoteIcon,
   CalendarIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
+  ChevronRightIcon,
 } from "lucide-react";
 import { Address } from "viem";
 import {
@@ -27,10 +30,28 @@ import {
   getElectionStatusDisplay,
 } from "@/lib/utils/date-conversions";
 
+// Hybrid Drawer/Dialog imports
+import { useMediaQuery } from "@/hooks/use-media-query";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+  DrawerTrigger,
+  DrawerClose,
+} from "@/components/ui/drawer";
+
 export function PublicElectionsView() {
   const { electionIds, isLoading: isLoadingIds } = useGetAllElectionIds();
-  const [expandedElection, setExpandedElection] = useState<bigint | null>(null);
-
   if (isLoadingIds) {
     return (
       <Card>
@@ -78,14 +99,7 @@ export function PublicElectionsView() {
         </CardHeader>
         <CardContent className="space-y-4">
           {electionIds.map((electionId) => (
-            <ElectionCard
-              key={electionId.toString()}
-              electionId={electionId}
-              isExpanded={expandedElection === electionId}
-              onToggleExpand={() =>
-                setExpandedElection(expandedElection === electionId ? null : electionId)
-              }
-            />
+            <ElectionCard key={electionId.toString()} electionId={electionId} />
           ))}
         </CardContent>
       </Card>
@@ -93,14 +107,10 @@ export function PublicElectionsView() {
   );
 }
 
-interface ElectionCardProps {
-  electionId: bigint;
-  isExpanded: boolean;
-  onToggleExpand: () => void;
-}
-
-function ElectionCard({ electionId, isExpanded, onToggleExpand }: ElectionCardProps) {
+function ElectionCard({ electionId }: { electionId: bigint }) {
   const { electionDetails, isLoading } = useGetElectionDetails(electionId);
+  const [open, setOpen] = useState(false);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   if (isLoading) {
     return (
@@ -117,6 +127,25 @@ function ElectionCard({ electionId, isExpanded, onToggleExpand }: ElectionCardPr
   }
 
   const totalVotes = Number(electionDetails.totalVotes);
+
+  // The content to show in the Drawer/Dialog
+  const ResultsContent = (
+    <div className="space-y-4 pt-2">
+      {totalVotes > 0 ? (
+        <ElectionResults
+          candidates={electionDetails.candidates}
+          totalVotes={totalVotes}
+          electionId={electionId}
+        />
+      ) : (
+        <Alert>
+          <InfoIcon className="h-4 w-4" />
+          <AlertTitle>No Votes Yet</AlertTitle>
+          <AlertDescription>No votes have been cast in this election yet.</AlertDescription>
+        </Alert>
+      )}
+    </div>
+  );
 
   return (
     <Card
@@ -166,47 +195,52 @@ function ElectionCard({ electionId, isExpanded, onToggleExpand }: ElectionCardPr
                 </div>
               </div>
             </div>
-
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onToggleExpand}
-              className="flex items-center gap-2"
-            >
-              {isExpanded ? (
-                <>
-                  <ChevronUpIcon className="h-4 w-4" />
-                  Less Details
-                </>
-              ) : (
-                <>
-                  <ChevronDownIcon className="h-4 w-4" />
-                  More Details
-                </>
-              )}
-            </Button>
+            {/* Hybrid Drawer/Dialog Trigger */}
+            {isDesktop ? (
+              <Dialog open={open} onOpenChange={setOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                    <ChevronRightIcon className="h-4 w-4" />
+                    Results
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[600px]">
+                  <DialogHeader>
+                    <DialogTitle>Election Results</DialogTitle>
+                    <DialogDescription>
+                      {electionDetails.name} - {electionDetails.description}
+                    </DialogDescription>
+                  </DialogHeader>
+                  {ResultsContent}
+                </DialogContent>
+              </Dialog>
+            ) : (
+              <Drawer open={open} onOpenChange={setOpen}>
+                <DrawerTrigger asChild>
+                  <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                    <ChevronRightIcon className="h-4 w-4" />
+                    Results
+                  </Button>
+                </DrawerTrigger>
+                <DrawerContent>
+                  <div className="mx-auto w-full max-w-md">
+                    <DrawerHeader>
+                      <DrawerTitle>Election Results</DrawerTitle>
+                      <DrawerDescription>
+                        {electionDetails.name} - {electionDetails.description}
+                      </DrawerDescription>
+                    </DrawerHeader>
+                    {ResultsContent}
+                    <DrawerClose asChild>
+                      <Button variant="outline" className="mt-4 w-full">
+                        Close
+                      </Button>
+                    </DrawerClose>
+                  </div>
+                </DrawerContent>
+              </Drawer>
+            )}
           </div>
-
-          {/* Expanded Content */}
-          {isExpanded && (
-            <div className="space-y-4 pt-4 border-t">
-              {totalVotes > 0 ? (
-                <ElectionResults
-                  candidates={electionDetails.candidates}
-                  totalVotes={totalVotes}
-                  electionId={electionId}
-                />
-              ) : (
-                <Alert>
-                  <InfoIcon className="h-4 w-4" />
-                  <AlertTitle>No Votes Yet</AlertTitle>
-                  <AlertDescription>
-                    No votes have been cast in this election yet.
-                  </AlertDescription>
-                </Alert>
-              )}
-            </div>
-          )}
         </div>
       </CardContent>
     </Card>
@@ -254,8 +288,6 @@ interface CandidateResultCardProps {
   rank: number;
   electionId: bigint;
 }
-
-import { useGetVotesOfCandidate } from "@/hooks/useElectionDatabase";
 
 function CandidateResultCard({
   candidateAddress,
