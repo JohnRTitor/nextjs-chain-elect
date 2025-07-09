@@ -31,10 +31,11 @@ export function VoterTabs({
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-      <TabsList className="grid grid-cols-3">
+      <TabsList className="flex flex-row gap-2">
         <TabsTrigger value="profile">Profile</TabsTrigger>
         <TabsTrigger value="status">Voting Status</TabsTrigger>
-        <TabsTrigger value="settings">Settings</TabsTrigger>
+        <TabsTrigger value="edit-profile">Edit Profile</TabsTrigger>
+        <TabsTrigger value="account-management">Account Management</TabsTrigger>
       </TabsList>
 
       <TabsContent value="profile">
@@ -53,11 +54,21 @@ export function VoterTabs({
         </Card>
       </TabsContent>
 
-      <TabsContent value="settings">
+      <TabsContent value="edit-profile">
         <VoterSettings
           voterDetails={voterDetails}
           onUpdateSuccess={onUpdateSuccess}
           onRegistrationCancelled={() => onRegistrationStatusChange(false)}
+          settingsTab="profile"
+        />
+      </TabsContent>
+
+      <TabsContent value="account-management">
+        <VoterSettings
+          voterDetails={voterDetails}
+          onUpdateSuccess={onUpdateSuccess}
+          onRegistrationCancelled={() => onRegistrationStatusChange(false)}
+          settingsTab="account"
         />
       </TabsContent>
     </Tabs>

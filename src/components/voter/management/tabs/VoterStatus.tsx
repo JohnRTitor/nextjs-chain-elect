@@ -55,6 +55,13 @@ export function VoterStatus({ voterDetails }: VoterStatusProps) {
               </div>
             </div>
           </CardContent>
+          <CardFooter>
+            <Link href="/elections" className="w-full">
+              <Button className="w-full">
+                <VoteIcon className="mr-2 h-4 w-4" /> Go to Elections
+              </Button>
+            </Link>
+          </CardFooter>
           {!hasVoted && (
             <CardFooter>
               <Link href="/elections" className="w-full">
@@ -68,10 +75,12 @@ export function VoterStatus({ voterDetails }: VoterStatusProps) {
       </div>
 
       {hasVoted ? (
-        <Alert className="bg-green-50 border-green-200">
-          <CheckCircle2Icon className="h-4 w-4 text-green-600" />
-          <AlertTitle className="text-green-800">Thank you for participating</AlertTitle>
-          <AlertDescription className="text-green-700">
+        <Alert className="bg-green-50 border-green-200 text-green-800 dark:bg-green-900/30 dark:border-green-800 dark:text-green-200">
+          <CheckCircle2Icon className="h-4 w-4 text-green-600 dark:text-green-300" />
+          <AlertTitle className="text-green-800 dark:text-green-200">
+            Thank you for participating
+          </AlertTitle>
+          <AlertDescription className="text-green-700 dark:text-green-200">
             Your participation helps ensure a democratic election process. The results will be
             available after the election period ends.
           </AlertDescription>
