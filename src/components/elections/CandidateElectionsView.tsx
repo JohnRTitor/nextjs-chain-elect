@@ -312,7 +312,7 @@ function CandidateElectionCard({
                   <AlertTitle>Warning</AlertTitle>
                   <AlertDescription>
                     {totalVotes} vote{totalVotes === 1 ? " has" : "s have"} already been cast in
-                    this election. Withdrawing now may affect the election results.
+                    this election. Withdrawing now is not possible.
                   </AlertDescription>
                 </Alert>
               )}
