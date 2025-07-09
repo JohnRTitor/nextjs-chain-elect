@@ -90,7 +90,6 @@ export function EditCandidateDialog({
       description="Update the candidate's details. Changes will be recorded on the blockchain."
       dialogWidthClass="sm:max-w-lg max-h-[90vh] overflow-y-auto"
       drawerWidthClass="max-w-lg"
-      showDrawerCloseButton={true}
       footer={null}
     >
       {isLoadingDetails || !candidateDetails ? (

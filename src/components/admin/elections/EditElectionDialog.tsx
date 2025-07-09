@@ -103,7 +103,6 @@ export function EditElectionDialog({
       description="Update the election information. Note that you cannot modify active elections or elections where voting has already occurred."
       dialogWidthClass="sm:max-w-lg"
       drawerWidthClass="max-w-md"
-      showDrawerCloseButton={true}
       footer={null}
     >
       {isLoadingDetails || !electionDetails ? (

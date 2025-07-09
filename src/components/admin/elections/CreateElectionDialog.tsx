@@ -95,7 +95,6 @@ export function CreateElectionDialog({
       description="Create a new election campaign. The election will be created in an inactive state."
       dialogWidthClass="sm:max-w-lg"
       drawerWidthClass="max-w-md"
-      showDrawerCloseButton={true}
       footer={null}
     >
       <Form {...form}>

@@ -143,7 +143,6 @@ export function AddCandidateDialog({
       description="Register a new candidate in the system. This will create a candidate entry linked to the specified wallet address."
       drawerWidthClass="max-w-lg"
       dialogWidthClass="sm:max-w-lg"
-      showDrawerCloseButton={true}
       footer={
         <div className="pt-4 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
           <Button

@@ -132,7 +132,6 @@ export function AddVoterDialog({
       footer={null}
       drawerWidthClass="max-w-lg"
       dialogWidthClass="sm:max-w-lg"
-      showDrawerCloseButton={true}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

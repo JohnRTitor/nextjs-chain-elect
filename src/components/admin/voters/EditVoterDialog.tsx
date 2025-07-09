@@ -95,7 +95,6 @@ export function EditVoterDialog({
       dialogWidthClass="sm:max-w-lg"
       drawerWidthClass="max-w-lg"
       footer={null}
-      showDrawerCloseButton={true}
     >
       {isLoadingDetails || !voterDetails ? (
         <div className="py-8 flex justify-center">
