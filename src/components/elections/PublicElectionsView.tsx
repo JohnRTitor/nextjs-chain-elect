@@ -117,6 +117,7 @@ function ElectionCard({ electionId }: { electionId: bigint }) {
           candidates={electionDetails.candidates}
           totalVotes={totalVotes}
           electionId={electionId}
+          isActive={isElectionActive(electionDetails.status)}
         />
       ) : (
         <Alert>
@@ -180,7 +181,11 @@ function ElectionCard({ electionId }: { electionId: bigint }) {
             <HybridDialogDrawer
               open={open}
               onOpenChange={setOpen}
-              title="Election Results"
+              title={
+                isElectionActive(electionDetails.status)
+                  ? "Provisional Election Results"
+                  : "Election Results"
+              }
               description={
                 <>
                   {electionDetails.name} - {electionDetails.description}
@@ -221,9 +226,10 @@ interface ElectionResultsProps {
   candidates: Address[];
   totalVotes: number;
   electionId: bigint;
+  isActive?: boolean;
 }
 
-function ElectionResults({ candidates, totalVotes, electionId }: ElectionResultsProps) {
+function ElectionResults({ candidates, totalVotes, electionId, isActive }: ElectionResultsProps) {
   if (candidates.length === 0) {
     return (
       <Alert>
@@ -236,7 +242,9 @@ function ElectionResults({ candidates, totalVotes, electionId }: ElectionResults
 
   return (
     <div className="space-y-4">
-      <h4 className="font-medium text-sm text-muted-foreground">Election Results</h4>
+      <h4 className="font-medium text-sm text-muted-foreground">
+        {isActive ? "Provisional Election Results" : "Election Results"}
+      </h4>
       <div className="space-y-3">
         {candidates.map((candidateAddress, index) => (
           <CandidateResultCard

@@ -15,6 +15,7 @@ import { Progress } from "@/components/ui/progress";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CheckCircle2Icon, TrophyIcon, InfoIcon } from "lucide-react";
+import { isElectionActive } from "@/lib/utils/date-conversions";
 
 interface VotingResultsProps {
   electionId: bigint;
@@ -32,8 +33,16 @@ export function VotingResults({ electionId, userChoice }: VotingResultsProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Election Results</CardTitle>
-          <CardDescription>Your vote has been recorded successfully</CardDescription>
+          <CardTitle>
+            {electionDetails && isElectionActive(electionDetails.status)
+              ? "Provisional Election Results"
+              : "Election Results"}
+          </CardTitle>
+          <CardDescription>
+            {electionDetails && isElectionActive(electionDetails.status)
+              ? "These results are provisional and may change as more votes are cast."
+              : "Your vote has been recorded successfully"}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex justify-center py-8">
@@ -48,8 +57,16 @@ export function VotingResults({ electionId, userChoice }: VotingResultsProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Election Results</CardTitle>
-          <CardDescription>Your vote has been recorded successfully</CardDescription>
+          <CardTitle>
+            {electionDetails && isElectionActive(electionDetails.status)
+              ? "Provisional Election Results"
+              : "Election Results"}
+          </CardTitle>
+          <CardDescription>
+            {electionDetails && isElectionActive(electionDetails.status)
+              ? "These results are provisional and may change as more votes are cast."
+              : "Your vote has been recorded successfully"}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Alert variant="destructive">
@@ -112,8 +129,16 @@ export function VotingResults({ electionId, userChoice }: VotingResultsProps) {
       {/* Election Results */}
       <Card>
         <CardHeader>
-          <CardTitle>Election Results</CardTitle>
-          <CardDescription>Current vote tally - {totalVotes} total votes cast</CardDescription>
+          <CardTitle>
+            {isElectionActive(electionDetails.status)
+              ? "Provisional Election Results"
+              : "Election Results"}
+          </CardTitle>
+          <CardDescription>
+            {isElectionActive(electionDetails.status)
+              ? `These results are provisional and may change as more votes are cast - ${totalVotes} total votes cast`
+              : `Current vote tally - ${totalVotes} total votes cast`}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {totalVotes === 0 ? (
