@@ -1,6 +1,6 @@
 {
   "addresses": {
-    "sepolia": "0xa1dA479974c5dF1F795baA551DCAab31F5371866"
+    "sepolia": "0x86a0f02749dD842eB2C39a5dbC893F6003163c8B"
   },
   "abi": [
     {
@@ -56,12 +56,12 @@
     },
     {
       "inputs": [],
-      "name": "ElectionDatabase__ElectionActive",
+      "name": "ElectionDatabase__ElectionAlreadyArchived",
       "type": "error"
     },
     {
       "inputs": [],
-      "name": "ElectionDatabase__ElectionClosed",
+      "name": "ElectionDatabase__ElectionAlreadyCompleted",
       "type": "error"
     },
     {
@@ -71,7 +71,27 @@
     },
     {
       "inputs": [],
+      "name": "ElectionDatabase__ElectionHasNoVotes",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ElectionDatabase__ElectionNotActive",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ElectionDatabase__ElectionNotCompleted",
+      "type": "error"
+    },
+    {
+      "inputs": [],
       "name": "ElectionDatabase__ElectionNotFound",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ElectionDatabase__ElectionNotNew",
       "type": "error"
     },
     {
@@ -306,7 +326,26 @@
           "type": "address"
         }
       ],
-      "name": "ElectionClosed",
+      "name": "ElectionArchived",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "electionId",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "admin",
+          "type": "address"
+        }
+      ],
+      "name": "ElectionCompleted",
       "type": "event"
     },
     {
@@ -374,7 +413,20 @@
           "type": "uint256"
         }
       ],
-      "name": "adminCloseElection",
+      "name": "adminArchiveElection",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_electionId",
+          "type": "uint256"
+        }
+      ],
+      "name": "adminCompleteElection",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
@@ -599,9 +651,9 @@
           "type": "string"
         },
         {
-          "internalType": "bool",
-          "name": "isActive",
-          "type": "bool"
+          "internalType": "enum ElectionDatabase.ElectionStatus",
+          "name": "status",
+          "type": "uint8"
         },
         {
           "internalType": "address[]",
@@ -633,9 +685,9 @@
       "name": "getElectionStatus",
       "outputs": [
         {
-          "internalType": "bool",
+          "internalType": "enum ElectionDatabase.ElectionStatus",
           "name": "",
-          "type": "bool"
+          "type": "uint8"
         }
       ],
       "stateMutability": "view",
