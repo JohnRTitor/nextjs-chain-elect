@@ -11,7 +11,7 @@ import {
 } from "@/hooks/useCandidateDatabase";
 import { PageHeader } from "@/components/common/PageHeader";
 import { LoadingView } from "@/components/common/LoadingView";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Eye, User, Users } from "lucide-react";

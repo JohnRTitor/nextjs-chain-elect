@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { VoterDetails } from "@/types";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { PencilIcon, Trash2Icon, RefreshCwIcon, Loader2Icon, ShieldIcon } from "lucide-react";
 import {
