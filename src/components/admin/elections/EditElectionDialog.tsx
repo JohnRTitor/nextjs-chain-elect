@@ -52,7 +52,8 @@ export function EditElectionDialog({
     mode: "onBlur",
   });
 
-  // Update form with election details when loaded
+  // Reset form with election details when loaded
+  // Only reset form once per election change
   const hasReset = useRef(false);
 
   useEffect(() => {

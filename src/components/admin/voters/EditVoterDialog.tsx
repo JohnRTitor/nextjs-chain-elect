@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Address } from "viem";
 import { useForm } from "react-hook-form";
 import { valibotResolver } from "@hookform/resolvers/valibot";
@@ -59,12 +59,20 @@ export function EditVoterDialog({
     mode: "onBlur",
   });
 
-  // Update form with voter details when loaded
+  // Reset form with voter details when loaded
+  // Only reset form once per voter change
+  const hasReset = useRef(false);
+
   useEffect(() => {
-    if (!isLoadingDetails && voterDetails) {
+    if (!isLoadingDetails && voterDetails && !hasReset.current) {
       form.reset(contractDataToVoterForm(voterDetails));
+      hasReset.current = true;
     }
-  }, [isLoadingDetails, voterDetails, form]);
+  }, [isLoadingDetails, voterDetails]);
+
+  useEffect(() => {
+    hasReset.current = false;
+  }, [voterAddress]);
 
   // Listen for successful update
   useEffect(() => {
