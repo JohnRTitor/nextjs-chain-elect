@@ -1,8 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { useGetMyRegistrationStatus as useGetVoterRegistrationStatus } from "@/hooks/useVoterDatabase";
-import { useGetMyRegistrationStatus as useGetCandidateRegistrationStatus } from "@/hooks/useCandidateDatabase";
+import {
+  useGetMyRegistrationStatus as useGetVoterRegistrationStatus,
+  useGetMyDetails as useGetVoterDetails,
+} from "@/hooks/useVoterDatabase";
+import {
+  useGetMyRegistrationStatus as useGetCandidateRegistrationStatus,
+  useGetMyDetails as useGetCandidateDetails,
+} from "@/hooks/useCandidateDatabase";
 import { PageHeader } from "@/components/common/PageHeader";
 import { LoadingView } from "@/components/common/LoadingView";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -18,8 +24,27 @@ type ViewMode = "public" | "voter" | "candidate";
 export function ElectionsView() {
   const [viewMode, setViewMode] = useState<ViewMode>("public");
 
-  const { isRegistered: isVoterRegistered, isLoading: isCheckingVoter } = useGetVoterRegistrationStatus();
-  const { isRegistered: isCandidateRegistered, isLoading: isCheckingCandidate } = useGetCandidateRegistrationStatus();
+  const { isRegistered: isVoterRegistered, isLoading: isCheckingVoter } =
+    useGetVoterRegistrationStatus();
+  const { isRegistered: isCandidateRegistered, isLoading: isCheckingCandidate } =
+    useGetCandidateRegistrationStatus();
+
+  // Fetch names for welcome message
+  const { voterDetails } = useGetVoterDetails();
+  const { candidateDetails } = useGetCandidateDetails();
+  const [hovered, setHovered] = useState(false);
+
+  let displayName = voterDetails?.name || candidateDetails?.name || "User";
+  let showHover = false;
+
+  if (
+    voterDetails?.name &&
+    candidateDetails?.name &&
+    voterDetails.name !== candidateDetails.name
+  ) {
+    showHover = true;
+    displayName = hovered ? candidateDetails.name : voterDetails.name;
+  }
 
   const isLoading = isCheckingVoter || isCheckingCandidate;
 
@@ -58,7 +83,7 @@ export function ElectionsView() {
   ];
 
   // If user doesn't have access to current view, switch to public
-  const currentView = availableViews.find(v => v.mode === viewMode);
+  const currentView = availableViews.find((v) => v.mode === viewMode);
   if (!currentView?.available && viewMode !== "public") {
     setViewMode("public");
   }
@@ -78,13 +103,40 @@ export function ElectionsView() {
     <div className="container max-w-6xl py-8 space-y-6">
       <PageHeader title="Elections" description="View and participate in democratic elections" />
 
+      {/* Welcome message with hover toggle */}
+      <div className="mb-4">
+        <h2 className="text-2xl font-bold">
+          Welcome,{" "}
+          <span
+            style={{ cursor: showHover ? "pointer" : "default", transition: "color 0.2s" }}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            title={
+              showHover
+                ? hovered
+                  ? "Hover to see your Voter name"
+                  : "Hover to see your Candidate name"
+                : undefined
+            }
+            className={showHover ? "underline decoration-dotted" : ""}
+          >
+            {displayName}
+          </span>
+          {showHover && (
+            <span className="ml-2 text-xs text-muted-foreground">
+              ({hovered ? "Candidate" : "Voter"} name)
+            </span>
+          )}
+        </h2>
+      </div>
+
       {/* Access Level Toggle */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             View as:
             <Badge variant={viewMode === "public" ? "default" : "secondary"}>
-              {availableViews.find(v => v.mode === viewMode)?.label || "Public"}
+              {availableViews.find((v) => v.mode === viewMode)?.label || "Public"}
             </Badge>
           </CardTitle>
           <CardDescription>
