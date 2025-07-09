@@ -133,38 +133,34 @@ export function ElectionsView() {
       {/* Access Level Toggle */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            View as:
-            <Badge variant={viewMode === "public" ? "default" : "secondary"}>
-              {availableViews.find((v) => v.mode === viewMode)?.label || "Public"}
-            </Badge>
-          </CardTitle>
+          <div className="flex items-center gap-3">
+            <span className="font-medium text-base">View as:</span>
+            <div className="flex flex-wrap gap-2">
+              {availableViews.map((view) => {
+                const Icon = view.icon;
+                return (
+                  <Button
+                    key={view.mode}
+                    variant={viewMode === view.mode ? "default" : "outline"}
+                    size="sm"
+                    disabled={!view.available}
+                    onClick={() => view.available && setViewMode(view.mode)}
+                    className="flex items-center gap-2"
+                  >
+                    <Icon className="h-4 w-4" />
+                    {view.label}
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
           <CardDescription>
             Switch between different access levels based on your registration status
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-wrap gap-2">
-            {availableViews.map((view) => {
-              const Icon = view.icon;
-              return (
-                <Button
-                  key={view.mode}
-                  variant={viewMode === view.mode ? "default" : "outline"}
-                  size="sm"
-                  disabled={!view.available}
-                  onClick={() => view.available && setViewMode(view.mode)}
-                  className="flex items-center gap-2"
-                >
-                  <Icon className="h-4 w-4" />
-                  {view.label}
-                </Button>
-              );
-            })}
-          </div>
-
           {/* Registration Status Info */}
-          <div className="mt-4 pt-4 border-t">
+          <div className="pt-4 border-t">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div className="flex items-center justify-between">
                 <span className="text-muted-foreground">Voter Registration:</span>
