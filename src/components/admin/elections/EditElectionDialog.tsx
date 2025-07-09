@@ -89,7 +89,7 @@ export function EditElectionDialog({
   }, [isConfirmed, onSuccessAction, resetConfirmation]);
 
   const onSubmit = async (values: ElectionFormValues) => {
-    if (!electionId) return;
+    if (electionId === null || electionId === undefined) return;
 
     await adminUpdateElection(electionId, values.name, values.description);
   };
