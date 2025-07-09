@@ -62,12 +62,19 @@ export function EditElectionDialog({
   // Update form with election details when loaded
   useEffect(() => {
     if (!isLoadingDetails && electionDetails) {
-      form.reset({
-        name: electionDetails.name,
-        description: electionDetails.description,
-      });
+      // Prevent unnecessary reset by checking if values actually changed
+      const currentValues = form.getValues();
+      if (
+        currentValues.name !== electionDetails.name ||
+        currentValues.description !== electionDetails.description
+      ) {
+        form.reset({
+          name: electionDetails.name,
+          description: electionDetails.description,
+        });
+      }
     }
-  }, [isLoadingDetails, electionDetails, form]);
+  }, [isLoadingDetails, electionDetails]);
 
   // Listen for successful update
   useEffect(() => {
