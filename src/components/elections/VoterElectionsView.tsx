@@ -139,13 +139,24 @@ function VoterElectionCard({ electionId, onSelectElection }: VoterElectionCardPr
 
   return (
     <Card
-      className={`border-2 transition-all hover:shadow-md ${
-        isElectionActive(electionDetails.status)
-          ? "border-green-200 bg-green-50 dark:bg-green-950 dark:border-green-800 hover:border-green-300"
-          : isElectionCompleted(electionDetails.status)
-            ? "border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800 opacity-90"
-            : "border-gray-200 bg-gray-50 dark:bg-gray-950 dark:border-gray-800 opacity-75"
-      }`}
+      className={`border-2 transition-all
+        hover:shadow-lg hover:scale-[1.03] hover:border-primary
+        hover:ring-2 hover:ring-primary/60
+        focus-within:shadow-lg focus-within:scale-[1.03] focus-within:border-primary
+        focus-within:ring-2 focus-within:ring-primary/60
+        duration-300
+        ${
+          isElectionActive(electionDetails.status)
+            ? "border-green-200 bg-green-50 dark:bg-green-950 dark:border-green-800"
+            : isElectionCompleted(electionDetails.status)
+              ? "border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800 opacity-90"
+              : "border-gray-200 bg-gray-50 dark:bg-gray-950 dark:border-gray-800 opacity-75"
+        }
+      `}
+      style={{
+        transitionProperty: "box-shadow, transform, border-color, ring",
+        transitionDuration: "300ms",
+      }}
     >
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
