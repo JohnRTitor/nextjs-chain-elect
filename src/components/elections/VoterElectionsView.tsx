@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useGetAllElectionIds, useGetElectionDetails } from "@/hooks/useElectionDatabase";
+import {
+  useGetAllElectionIds,
+  useGetElectionDetails,
+  useHasVoted,
+} from "@/hooks/useElectionDatabase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -105,15 +109,19 @@ export function VoterElectionsView() {
   );
 }
 
+import { useAccount } from "wagmi";
+
 interface VoterElectionCardProps {
   electionId: bigint;
   onSelectElection: () => void;
 }
 
 function VoterElectionCard({ electionId, onSelectElection }: VoterElectionCardProps) {
+  const { address } = useAccount();
   const { electionDetails, isLoading } = useGetElectionDetails(electionId);
+  const { hasVoted, isLoading: isLoadingHasVoted } = useHasVoted(electionId, address);
 
-  if (isLoading) {
+  if (isLoading || isLoadingHasVoted) {
     return (
       <Card className="border-2">
         <CardContent className="p-4">
@@ -222,14 +230,25 @@ function VoterElectionCard({ electionId, onSelectElection }: VoterElectionCardPr
 
           <div className="ml-6">
             {isElectionActive(electionDetails.status) ? (
-              <Button
-                onClick={onSelectElection}
-                className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
-              >
-                <VoteIcon className="h-4 w-4" />
-                Vote Now
-                <ArrowRightIcon className="h-4 w-4" />
-              </Button>
+              hasVoted ? (
+                <Button
+                  onClick={onSelectElection}
+                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+                >
+                  <VoteIcon className="h-4 w-4" />
+                  See Results
+                  <ArrowRightIcon className="h-4 w-4" />
+                </Button>
+              ) : (
+                <Button
+                  onClick={onSelectElection}
+                  className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+                >
+                  <VoteIcon className="h-4 w-4" />
+                  Vote Now
+                  <ArrowRightIcon className="h-4 w-4" />
+                </Button>
+              )
             ) : (
               <Button variant="outline" disabled className="flex items-center gap-2">
                 <VoteIcon className="h-4 w-4" />
