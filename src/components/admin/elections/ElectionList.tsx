@@ -29,7 +29,6 @@ import {
   EditIcon,
   Trash2Icon,
   PlayIcon,
-  PauseIcon,
   UsersIcon,
   CheckCircleIcon,
   ArchiveIcon,

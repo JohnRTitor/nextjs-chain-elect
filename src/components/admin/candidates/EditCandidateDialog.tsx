@@ -70,7 +70,7 @@ export function EditCandidateDialog({
       form.reset(contractDataToCandidateForm(candidateDetails));
       hasReset.current = true;
     }
-  }, [isLoadingDetails, candidateDetails]);
+  }, [isLoadingDetails, candidateDetails, form]);
 
   useEffect(() => {
     hasReset.current = false;

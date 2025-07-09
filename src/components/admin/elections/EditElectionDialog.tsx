@@ -64,7 +64,7 @@ export function EditElectionDialog({
       });
       hasReset.current = true;
     }
-  }, [isLoadingDetails, electionDetails]);
+  }, [isLoadingDetails, electionDetails, form]);
 
   useEffect(() => {
     hasReset.current = false;

@@ -68,7 +68,7 @@ export function EditVoterDialog({
       form.reset(contractDataToVoterForm(voterDetails));
       hasReset.current = true;
     }
-  }, [isLoadingDetails, voterDetails]);
+  }, [isLoadingDetails, voterDetails, form]);
 
   useEffect(() => {
     hasReset.current = false;
