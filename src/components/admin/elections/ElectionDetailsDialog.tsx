@@ -132,12 +132,6 @@ export function ElectionDetailsDialog({
                 {electionDetails.candidates.length === 1 ? "candidate" : "candidates"} registered.
               </p>
             </div>
-
-            {/* Election ID section */}
-            <div className="border-t pt-4">
-              <h4 className="mb-1 text-sm font-medium text-muted-foreground">Election ID</h4>
-              <p className="font-mono text-xs">{electionId?.toString()}</p>
-            </div>
           </div>
         )}
       </DialogContent>
