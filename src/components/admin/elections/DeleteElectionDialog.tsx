@@ -29,7 +29,9 @@ export function DeleteElectionDialog({
   electionId,
   onSuccessAction,
 }: DeleteElectionDialogProps) {
-  const { electionDetails, isLoading } = useGetElectionDetails(electionId || undefined);
+  const { electionDetails, isLoading } = useGetElectionDetails(
+    electionId !== null && electionId !== undefined ? electionId : undefined,
+  );
   const { adminDeleteElection, isPending, isConfirming, isConfirmed, resetConfirmation } =
     useAdminDeleteElection();
 
@@ -46,7 +48,7 @@ export function DeleteElectionDialog({
   }, [isConfirmed, onSuccessAction, resetConfirmation]);
 
   const handleDelete = async () => {
-    if (!electionId) return;
+    if (electionId === null || electionId === undefined) return;
     await adminDeleteElection(electionId);
   };
 

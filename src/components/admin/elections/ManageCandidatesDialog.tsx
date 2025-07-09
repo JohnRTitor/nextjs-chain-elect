@@ -59,14 +59,18 @@ export function ManageCandidatesDialog({
     electionDetails,
     isLoading: isElectionLoading,
     refetch: refetchElection,
-  } = useGetElectionDetails(electionId || undefined);
+  } = useGetElectionDetails(
+    electionId !== null && electionId !== undefined ? electionId : undefined,
+  );
 
   // Fetch registered candidates for this election
   const {
     candidates: enrolledCandidates,
     isLoading: isEnrolledLoading,
     refetch: refetchEnrolled,
-  } = useGetRegisteredCandidates(electionId || undefined);
+  } = useGetRegisteredCandidates(
+    electionId !== null && electionId !== undefined ? electionId : undefined,
+  );
 
   // Fetch all candidates from the candidate database to show available ones
   const { candidates: allCandidates, isLoading: isAllLoading } = useGetAllCandidates();
@@ -140,13 +144,13 @@ export function ManageCandidatesDialog({
 
   // Handle enrolling a candidate
   const handleEnroll = async (candidateAddress: Address) => {
-    if (!electionId) return;
+    if (electionId === null || electionId === undefined) return;
     await adminEnrollCandidate(electionId, candidateAddress);
   };
 
   // Handle withdrawing a candidate
   const handleWithdraw = async (candidateAddress: Address) => {
-    if (!electionId) return;
+    if (electionId === null || electionId === undefined) return;
     await adminWithdrawCandidate(electionId, candidateAddress);
   };
 

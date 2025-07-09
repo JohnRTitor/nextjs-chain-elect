@@ -42,7 +42,7 @@ export function EditElectionDialog({
 }: EditElectionDialogProps) {
   // Fetch election details
   const { electionDetails, isLoading: isLoadingDetails } = useGetElectionDetails(
-    electionId || undefined,
+    electionId !== null && electionId !== undefined ? electionId : undefined,
   );
 
   // Hook for updating election

@@ -31,10 +31,14 @@ export function ElectionDetailsDialog({
   electionId,
 }: ElectionDetailsDialogProps) {
   // Fetch election details
-  const { electionDetails, isLoading } = useGetElectionDetails(electionId || undefined);
+  const { electionDetails, isLoading } = useGetElectionDetails(
+    electionId !== null && electionId !== undefined ? electionId : undefined,
+  );
 
   // Fetch current winner (if election is active, this could change)
-  const { winner, isLoading: isWinnerLoading } = useGetWinner(electionId || undefined);
+  const { winner, isLoading: isWinnerLoading } = useGetWinner(
+    electionId !== null && electionId !== undefined ? electionId : undefined,
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChangeAction}>
