@@ -18,6 +18,14 @@ export const GenderEnum = {
 } as const;
 export type Gender = (typeof GenderEnum)[keyof typeof GenderEnum];
 
+export const ElectionStatusEnum = {
+  NEW: 0,
+  ACTIVE: 1,
+  COMPLETED: 2,
+  ARCHIVED: 3,
+} as const;
+export type ElectionStatus = (typeof ElectionStatusEnum)[keyof typeof ElectionStatusEnum];
+
 export type VoterContractParams = {
   name: string;
   dateOfBirthEpoch: bigint;
@@ -60,7 +68,7 @@ export type CandidateContractParams = {
 export type ElectionDetails = {
   name: string;
   description: string;
-  isActive: boolean;
+  status: ElectionStatus;
   candidates: Address[];
   totalVotes: bigint;
   registrationTimestamp: bigint;

@@ -9,7 +9,7 @@ import {
 } from "wagmi";
 import { useEffect, useState } from "react";
 import { Address, ContractFunctionArgs, Hash } from "viem";
-import { ElectionDetails } from "@/types";
+import { ElectionDetails, ElectionStatus } from "@/types";
 
 // CORE HOOKS FOR READ AND WRITE OPERATIONS
 export function useElectionDatabaseWriteFunction(functionName: string) {
@@ -225,21 +225,44 @@ export function useAdminOpenElection() {
   };
 }
 
-export function useAdminCloseElection() {
+export function useAdminCompleteElection() {
   const { execute, isPending, isConfirming, isConfirmed, hash, resetConfirmation } =
-    useElectionDatabaseWriteFunction("adminCloseElection");
+    useElectionDatabaseWriteFunction("adminCompleteElection");
 
-  const adminCloseElection = async (electionId: bigint) => {
+  const adminCompleteElection = async (electionId: bigint) => {
     return execute([electionId], {
-      loading: "Closing election...",
-      success: "Election closed! Waiting for blockchain confirmation...",
-      error: "Failed to close election",
-      confirmed: "Election has been closed successfully!",
+      loading: "Completing election...",
+      success: "Election completed! Waiting for blockchain confirmation...",
+      error: "Failed to complete election",
+      confirmed: "Election has been completed successfully!",
     });
   };
 
   return {
-    adminCloseElection,
+    adminCompleteElection,
+    isPending,
+    isConfirming,
+    isConfirmed,
+    hash,
+    resetConfirmation,
+  };
+}
+
+export function useAdminArchiveElection() {
+  const { execute, isPending, isConfirming, isConfirmed, hash, resetConfirmation } =
+    useElectionDatabaseWriteFunction("adminArchiveElection");
+
+  const adminArchiveElection = async (electionId: bigint) => {
+    return execute([electionId], {
+      loading: "Archiving election...",
+      success: "Election archived! Waiting for blockchain confirmation...",
+      error: "Failed to archive election",
+      confirmed: "Election has been archived successfully!",
+    });
+  };
+
+  return {
+    adminArchiveElection,
     isPending,
     isConfirming,
     isConfirmed,
@@ -367,13 +390,13 @@ export function useVote() {
 
 // Election Information Reading
 export function useGetElectionStatus(electionId: bigint | undefined) {
-  const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<boolean>(
+  const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<number>(
     "getElectionStatus",
     electionId !== undefined ? [electionId] : undefined,
   );
 
   return {
-    isActive: data,
+    status: data,
     isLoading,
     isError,
     refetch,
@@ -382,14 +405,14 @@ export function useGetElectionStatus(electionId: bigint | undefined) {
 
 export function useGetElectionDetails(electionId: bigint | undefined) {
   const { data, isLoading, isError, refetch } = useElectionDatabaseReadFunction<
-    [string, string, boolean, Address[], bigint, bigint]
+    [string, string, ElectionStatus, Address[], bigint, bigint]
   >("getElectionDetails", electionId !== undefined ? [electionId] : undefined);
 
   const formattedData: ElectionDetails | undefined = data
     ? {
         name: data[0],
         description: data[1],
-        isActive: data[2],
+        status: data[2],
         candidates: data[3],
         totalVotes: data[4],
         registrationTimestamp: data[5],
