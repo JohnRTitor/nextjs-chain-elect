@@ -29,6 +29,7 @@ import {
   isElectionActive,
   isElectionCompleted,
   getElectionStatusDisplay,
+  isElectionNew,
 } from "@/lib/utils/date-conversions";
 
 export function PublicElectionsView() {
@@ -195,8 +196,16 @@ function ElectionCard({ electionId }: { electionId: bigint }) {
             <Button
               variant="ghost"
               size="sm"
-              className="flex items-center gap-2"
-              onClick={() => setOpen(true)}
+              className={`flex items-center gap-2 ${isElectionNew(electionDetails.status) ? "opacity-50 cursor-not-allowed" : ""}`}
+              onClick={() => {
+                if (!isElectionNew(electionDetails.status)) setOpen(true);
+              }}
+              disabled={isElectionNew(electionDetails.status)}
+              title={
+                isElectionNew(electionDetails.status)
+                  ? "Results will be available once voting starts"
+                  : undefined
+              }
             >
               <ChevronRightIcon className="h-4 w-4" />
               Results
