@@ -51,7 +51,10 @@ export function ElectionsView() {
   if (isLoading) {
     return (
       <div className="container max-w-6xl py-8 space-y-6">
-        <PageHeader title="Elections" description="View and participate in democratic elections" />
+        <PageHeader
+          title="Elections"
+          description="View and participate in democratic elections. Use the filter and sort controls below to find elections by status, recency, number of candidates, or votes."
+        />
         <LoadingView message="Checking your access levels..." type="portal" />
       </div>
     );

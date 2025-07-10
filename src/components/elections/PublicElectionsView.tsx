@@ -34,7 +34,21 @@ import {
 
 export function PublicElectionsView() {
   const { electionIds, isLoading: isLoadingIds } = useGetAllElectionIds();
-  if (isLoadingIds) {
+
+  // Filter and sort state
+  const [filterStatus, setFilterStatus] = useState<
+    "all" | "new" | "active" | "completed" | "archived"
+  >("all");
+  const [sortBy, setSortBy] = useState<"recent" | "oldest" | "candidates" | "votes">("recent");
+
+  // For filtering/sorting, we need to fetch all election details
+  const allElectionDetails = (electionIds || []).map((electionId) => {
+    const { electionDetails } = useGetElectionDetails(electionId);
+    return { electionId, electionDetails };
+  });
+
+  // Loading state
+  if (isLoadingIds || allElectionDetails.some((e) => !e.electionDetails)) {
     return (
       <Card>
         <CardHeader>
@@ -49,6 +63,41 @@ export function PublicElectionsView() {
       </Card>
     );
   }
+
+  // Filter elections by status
+  let filteredElections = allElectionDetails.filter(({ electionDetails }) => {
+    if (!electionDetails) return false;
+    if (filterStatus === "all") return true;
+    if (filterStatus === "new") return isElectionNew(electionDetails.status);
+    if (filterStatus === "active") return isElectionActive(electionDetails.status);
+    if (filterStatus === "completed") return isElectionCompleted(electionDetails.status);
+    if (filterStatus === "archived") return electionDetails.status === 3;
+    return true;
+  });
+
+  // Sort elections
+  filteredElections = filteredElections.slice().sort((a, b) => {
+    if (!a.electionDetails || !b.electionDetails) return 0;
+    if (sortBy === "recent") {
+      return (
+        Number(b.electionDetails.registrationTimestamp) -
+        Number(a.electionDetails.registrationTimestamp)
+      );
+    }
+    if (sortBy === "oldest") {
+      return (
+        Number(a.electionDetails.registrationTimestamp) -
+        Number(b.electionDetails.registrationTimestamp)
+      );
+    }
+    if (sortBy === "candidates") {
+      return b.electionDetails.candidates.length - a.electionDetails.candidates.length;
+    }
+    if (sortBy === "votes") {
+      return Number(b.electionDetails.totalVotes) - Number(a.electionDetails.totalVotes);
+    }
+    return 0;
+  });
 
   if (!electionIds || electionIds.length === 0) {
     return (
@@ -79,10 +128,93 @@ export function PublicElectionsView() {
             View all elections, candidates, and current results. This is a read-only view.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          {electionIds.map((electionId) => (
-            <ElectionCard key={electionId.toString()} electionId={electionId} />
-          ))}
+        <CardContent>
+          {/* Filter and Sort Controls */}
+          <div className="flex flex-wrap gap-3 mb-6 items-center">
+            <div className="flex gap-2 items-center">
+              <span className="font-medium text-sm">Filter:</span>
+              <Button
+                variant={filterStatus === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterStatus("all")}
+              >
+                All
+              </Button>
+              <Button
+                variant={filterStatus === "new" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterStatus("new")}
+              >
+                New
+              </Button>
+              <Button
+                variant={filterStatus === "active" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterStatus("active")}
+              >
+                Active
+              </Button>
+              <Button
+                variant={filterStatus === "completed" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterStatus("completed")}
+              >
+                Completed
+              </Button>
+              <Button
+                variant={filterStatus === "archived" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterStatus("archived")}
+              >
+                Archived
+              </Button>
+            </div>
+            <div className="flex gap-2 items-center ml-auto">
+              <span className="font-medium text-sm">Sort by:</span>
+              <Button
+                variant={sortBy === "recent" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSortBy("recent")}
+              >
+                Most Recent
+              </Button>
+              <Button
+                variant={sortBy === "oldest" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSortBy("oldest")}
+              >
+                Oldest
+              </Button>
+              <Button
+                variant={sortBy === "candidates" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSortBy("candidates")}
+              >
+                Candidates
+              </Button>
+              <Button
+                variant={sortBy === "votes" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSortBy("votes")}
+              >
+                Votes
+              </Button>
+            </div>
+          </div>
+          {/* Elections List */}
+          <div className="space-y-4">
+            {filteredElections.length === 0 ? (
+              <Alert>
+                <InfoIcon className="h-4 w-4" />
+                <AlertTitle>No Elections Found</AlertTitle>
+                <AlertDescription>No elections match your filter criteria.</AlertDescription>
+              </Alert>
+            ) : (
+              filteredElections.map(({ electionId }) => (
+                <ElectionCard key={electionId.toString()} electionId={electionId} />
+              ))
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>
