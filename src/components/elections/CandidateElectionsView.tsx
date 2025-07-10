@@ -193,13 +193,15 @@ function CandidateElectionCard({
           focus-within:ring-2 focus-within:ring-primary/60
           duration-300
           ${
-            isElectionActive(electionDetails.status)
-              ? isEnrolled
-                ? "border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800"
-                : "border-green-200 bg-green-50 dark:bg-green-950 dark:border-green-800"
-              : isElectionCompleted(electionDetails.status)
-                ? "border-purple-200 bg-purple-50 dark:bg-purple-950 dark:border-purple-800 opacity-90"
-                : "border-gray-200 bg-gray-50 dark:bg-gray-950 dark:border-gray-800 opacity-75"
+            isElectionNew(electionDetails.status)
+              ? "border-yellow-400 bg-yellow-50 dark:bg-yellow-950 dark:border-yellow-500 ring-2 ring-yellow-400"
+              : isElectionActive(electionDetails.status)
+                ? isEnrolled
+                  ? "border-blue-200 bg-blue-50 dark:bg-blue-950 dark:border-blue-800"
+                  : "border-green-200 bg-green-50 dark:bg-green-950 dark:border-green-800"
+                : isElectionCompleted(electionDetails.status)
+                  ? "border-purple-200 bg-purple-50 dark:bg-purple-950 dark:border-purple-800 opacity-90"
+                  : "border-gray-200 bg-gray-50 dark:bg-gray-950 dark:border-gray-800 opacity-75"
           }
         `}
         style={{
