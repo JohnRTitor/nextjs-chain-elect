@@ -121,7 +121,7 @@ function CandidateCard({ candidateAddress, onSelect }: CandidateCardProps) {
   return (
     <Card className="border-2 transition-all hover:border-primary hover:shadow-md">
       <CardContent className="p-6">
-        <div className="flex items-start gap-4">
+        <div className="flex flex-col md:flex-row md:items-start gap-4">
           <Avatar className="h-16 w-16 text-lg">
             <AvatarFallback className="bg-primary text-primary-foreground">
               {getInitials(candidateDetails.name)}
@@ -154,8 +154,8 @@ function CandidateCard({ candidateAddress, onSelect }: CandidateCardProps) {
             </div>
           </div>
 
-          <div className="ml-4">
-            <Button onClick={onSelect} className="flex items-center gap-2">
+          <div className="w-full md:w-auto md:ml-4 mt-4 md:mt-0">
+            <Button onClick={onSelect} className="w-full md:w-auto flex items-center gap-2">
               <VoteIcon className="h-4 w-4" />
               Vote for {candidateDetails.name.split(" ")[0]}
             </Button>

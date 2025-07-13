@@ -134,7 +134,7 @@ export function CandidateElectionCard({
         }}
       >
         <CardContent className="p-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="space-y-3 flex-1">
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold text-lg">{electionDetails.name}</h3>
@@ -255,14 +255,14 @@ export function CandidateElectionCard({
               )}
             </div>
 
-            <div className="ml-6">
+            <div className="w-full md:w-auto md:ml-6">
               {canModifyCandidates ? (
                 isEnrolled ? (
                   <Button
                     variant="outline"
                     onClick={handleWithdraw}
                     disabled={isTransactionPending || isProcessing}
-                    className="flex items-center gap-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300"
+                    className="flex items-center gap-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 w-full md:w-auto"
                   >
                     {isTransactionPending ? (
                       <LoadingSpinner size="sm" />
@@ -275,7 +275,7 @@ export function CandidateElectionCard({
                   <Button
                     onClick={handleEnroll}
                     disabled={isTransactionPending || isProcessing}
-                    className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+                    className="flex items-center gap-2 bg-green-600 hover:bg-green-700 w-full md:w-auto"
                   >
                     {isTransactionPending ? (
                       <LoadingSpinner size="sm" />
@@ -286,7 +286,11 @@ export function CandidateElectionCard({
                   </Button>
                 )
               ) : (
-                <Button variant="outline" disabled className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  disabled
+                  className="flex items-center gap-2 w-full md:w-auto"
+                >
                   <InfoIcon className="h-4 w-4" />
                   {isElectionActive(electionDetails.status)
                     ? "Voting Active"

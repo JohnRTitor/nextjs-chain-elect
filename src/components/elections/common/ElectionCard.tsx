@@ -130,7 +130,7 @@ export function ElectionCard({ electionId }: { electionId: bigint }) {
         <CardContent className="p-6">
           <div className="space-y-4">
             {/* Election Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
               <div className="space-y-2 flex-1">
                 <div className="flex items-center gap-2">
                   <h3 className="font-semibold text-lg">{electionDetails.name}</h3>
@@ -177,44 +177,46 @@ export function ElectionCard({ electionId }: { electionId: bigint }) {
                   </div>
                 </div>
               </div>
-              {/* Hybrid Drawer/Dialog Trigger */}
-              <HybridDialogDrawer
-                open={open}
-                onOpenChange={setOpen}
-                title={
-                  isElectionActive(electionDetails.status)
-                    ? "Provisional Election Results"
-                    : "Election Results"
-                }
-                description={
-                  <>
-                    {electionDetails.name} - {electionDetails.description}
-                  </>
-                }
-                footer={null}
-                drawerWidthClass="max-w-md"
-                dialogWidthClass="sm:max-w-[600px]"
-                showDrawerCloseButton={true}
-              >
-                {ResultsContent}
-              </HybridDialogDrawer>
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`flex items-center gap-2 ${isElectionNew(electionDetails.status) ? "opacity-50 cursor-not-allowed" : ""}`}
-                onClick={() => {
-                  if (!isElectionNew(electionDetails.status)) setOpen(true);
-                }}
-                disabled={isElectionNew(electionDetails.status)}
-                title={
-                  isElectionNew(electionDetails.status)
-                    ? "Results will be available once voting starts"
-                    : undefined
-                }
-              >
-                <ChevronRightIcon className="h-4 w-4" />
-                Results
-              </Button>
+              <div className="w-full md:w-auto md:ml-6 flex flex-col gap-2">
+                {/* Hybrid Drawer/Dialog Trigger */}
+                <HybridDialogDrawer
+                  open={open}
+                  onOpenChange={setOpen}
+                  title={
+                    isElectionActive(electionDetails.status)
+                      ? "Provisional Election Results"
+                      : "Election Results"
+                  }
+                  description={
+                    <>
+                      {electionDetails.name} - {electionDetails.description}
+                    </>
+                  }
+                  footer={null}
+                  drawerWidthClass="max-w-md"
+                  dialogWidthClass="sm:max-w-[600px]"
+                  showDrawerCloseButton={true}
+                >
+                  {ResultsContent}
+                </HybridDialogDrawer>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`flex items-center gap-2 w-full md:w-auto ${isElectionNew(electionDetails.status) ? "opacity-50 cursor-not-allowed" : ""}`}
+                  onClick={() => {
+                    if (!isElectionNew(electionDetails.status)) setOpen(true);
+                  }}
+                  disabled={isElectionNew(electionDetails.status)}
+                  title={
+                    isElectionNew(electionDetails.status)
+                      ? "Results will be available once voting starts"
+                      : undefined
+                  }
+                >
+                  <ChevronRightIcon className="h-4 w-4" />
+                  Results
+                </Button>
+              </div>
             </div>
           </div>
         </CardContent>

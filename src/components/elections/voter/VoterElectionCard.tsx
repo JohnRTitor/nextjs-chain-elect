@@ -156,7 +156,7 @@ export function VoterElectionCard({ electionId, onSelectElectionAction }: VoterE
         }}
       >
         <CardContent className="p-6">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="space-y-3 flex-1">
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold text-lg">{electionDetails.name}</h3>
@@ -247,12 +247,12 @@ export function VoterElectionCard({ electionId, onSelectElectionAction }: VoterE
               </div>
             </div>
 
-            <div className="ml-6">
+            <div className="w-full md:w-auto md:ml-6">
               {isElectionActive(electionDetails.status) ? (
                 hasVoted ? (
                   <Button
                     onClick={onSelectElectionAction}
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+                    className="w-full md:w-auto flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
                   >
                     <VoteIcon className="h-4 w-4" />
                     See Results
@@ -261,7 +261,7 @@ export function VoterElectionCard({ electionId, onSelectElectionAction }: VoterE
                 ) : (
                   <Button
                     onClick={onSelectElectionAction}
-                    className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+                    className="w-full md:w-auto flex items-center gap-2 bg-green-600 hover:bg-green-700"
                   >
                     <VoteIcon className="h-4 w-4" />
                     Vote Now
@@ -269,7 +269,11 @@ export function VoterElectionCard({ electionId, onSelectElectionAction }: VoterE
                   </Button>
                 )
               ) : (
-                <Button variant="outline" disabled className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  disabled
+                  className="w-full md:w-auto flex items-center gap-2"
+                >
                   <VoteIcon className="h-4 w-4" />
                   {isElectionCompleted(electionDetails.status) ? "Voting Ended" : "Not Active"}
                 </Button>
