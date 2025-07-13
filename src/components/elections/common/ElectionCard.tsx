@@ -2,19 +2,12 @@
 
 import { useState } from "react";
 import { useGetElectionDetails } from "@/hooks/useElectionDatabase";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  InfoIcon,
-  TrophyIcon,
-  UsersIcon,
-  VoteIcon,
-  CalendarIcon,
-  ChevronRightIcon,
-} from "lucide-react";
+import { InfoIcon, UsersIcon, VoteIcon, CalendarIcon, ChevronRightIcon } from "lucide-react";
 import { HybridDialogDrawer } from "@/components/ui/HybridDialogDrawer";
 import { Address } from "viem";
 import {

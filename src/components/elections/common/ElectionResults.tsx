@@ -1,7 +1,7 @@
 "use client";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { InfoIcon, TrophyIcon } from "lucide-react";
+import { InfoIcon } from "lucide-react";
 import { Address } from "viem";
 import { CandidateResultCard } from "./CandidateResultCard";
 

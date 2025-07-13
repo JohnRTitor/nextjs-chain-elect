@@ -14,7 +14,7 @@ import { LoadingView } from "@/components/common/LoadingView";
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Eye, User, Users } from "lucide-react";
+import { EyeIcon, UserIcon, UsersIcon } from "lucide-react";
 import { PublicElectionsView } from "./public/PublicElectionsView";
 import { VoterElectionsView } from "./voter/VoterElectionsView";
 import { CandidateElectionsView } from "./CandidateElectionsView";
@@ -63,21 +63,21 @@ export function ElectionsView() {
       mode: "public" as const,
       label: "Public",
       description: "View elections (read-only)",
-      icon: Eye,
+      icon: EyeIcon,
       available: true,
     },
     {
       mode: "voter" as const,
       label: "Voter",
       description: "Vote in elections",
-      icon: User,
+      icon: UserIcon,
       available: isVoterRegistered,
     },
     {
       mode: "candidate" as const,
       label: "Candidate",
       description: "Enroll in elections",
-      icon: Users,
+      icon: UsersIcon,
       available: isCandidateRegistered,
     },
   ];

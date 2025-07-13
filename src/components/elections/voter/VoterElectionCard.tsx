@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useGetElectionDetails, useHasVoted } from "@/hooks/useElectionDatabase";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
@@ -16,7 +16,6 @@ import {
   ArrowRightIcon,
 } from "lucide-react";
 import { HybridDialogDrawer } from "@/components/ui/HybridDialogDrawer";
-import { useGetCandidateDetails } from "@/hooks/useCandidateDatabase";
 import { isElectionActive, isElectionCompleted, getElectionStatusDisplay } from "@/lib/utils";
 import { useAccount } from "wagmi";
 import { Address } from "viem";

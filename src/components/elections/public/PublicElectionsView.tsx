@@ -1,12 +1,5 @@
 "use client";
 
-import {
-  calculateAge,
-  isElectionActive,
-  isElectionCompleted,
-  getElectionStatusDisplay,
-  isElectionNew,
-} from "@/lib/utils";
 import { useGetAllElectionIds } from "@/hooks/useElectionDatabase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";

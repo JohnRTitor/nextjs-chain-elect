@@ -2,10 +2,8 @@
 
 import { calculateAge } from "@/lib/utils";
 import { useGetVotesOfCandidate } from "@/hooks/useElectionDatabase";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { InfoIcon, TrophyIcon } from "lucide-react";
+import { TrophyIcon } from "lucide-react";
 import { Address } from "viem";
 import { useGetCandidateDetails } from "@/hooks/useCandidateDatabase";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
