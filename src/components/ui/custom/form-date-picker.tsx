@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { dateToEpoch, getMaxDateOfBirth, stringToDate } from "@/lib/utils";
+import { getMaxDateOfBirth, stringToDate } from "@/lib/utils";
 
 type FormDatePickerControlProps<T extends FieldValues> = {
   control: Control<T>;
@@ -44,7 +44,7 @@ export function FormDatePickerControl<T extends FieldValues>({
   maxDate,
   className,
 }: FormDatePickerControlProps<T>) {
-  // For date of birth, we use the maximum date as 18 years ago
+  // For date of birth, use the maximum date as 18 years ago
   const defaultMaxDate = isDateOfBirth ? new Date(getMaxDateOfBirth()) : maxDate || new Date();
 
   // Ensure we never go below 1970-01-01 (Unix epoch start)
@@ -55,43 +55,26 @@ export function FormDatePickerControl<T extends FieldValues>({
       : minDate
     : epochStartDate;
 
-  // Determine the fromYear and toYear for the calendar
-  // Ensure fromYear is never less than 1970 (Unix epoch start)
-  const fromYear = Math.max(1970, defaultMinDate.getFullYear());
-  const toYear = defaultMaxDate.getFullYear();
-
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => {
-        // Ensure we have a proper Date object for the calendar
-        // This is critical for the calendar to show the date as selected
         let dateValue: Date | undefined;
 
         try {
           if (field.value) {
-            // Handle different possible format scenarios
             if (typeof field.value === "string") {
-              // If it's an ISO string (YYYY-MM-DD)
               if (field.value.match(/^\d{4}-\d{2}-\d{2}$/)) {
                 dateValue = parseISO(field.value);
-              }
-              // If it's already a full ISO string with time
-              else if (field.value.includes("T")) {
+              } else if (field.value.includes("T")) {
                 dateValue = new Date(field.value);
-              }
-              // Fallback to the stringToDate utility
-              else {
+              } else {
                 dateValue = stringToDate(field.value);
               }
-            }
-            // If it's already a Date object
-            else if (Object.prototype.toString.call(field.value) === "[object Date]") {
+            } else if (Object.prototype.toString.call(field.value) === "[object Date]") {
               dateValue = field.value as Date;
             }
-
-            // Ensure it's a valid date
             if (dateValue && isNaN(dateValue.getTime())) {
               dateValue = undefined;
             }
@@ -135,7 +118,7 @@ export function FormDatePickerControl<T extends FieldValues>({
                 <Calendar
                   mode="single"
                   selected={dateValue}
-                  defaultMonth={dateValue}
+                  defaultMonth={dateValue || defaultMaxDate}
                   onSelect={(date) => {
                     if (date) {
                       const year = date.getFullYear();
@@ -149,10 +132,6 @@ export function FormDatePickerControl<T extends FieldValues>({
                   }}
                   disabled={(date) => date < defaultMinDate || date > defaultMaxDate}
                   captionLayout="dropdown"
-                  fromYear={defaultMinDate.getFullYear()}
-                  toYear={defaultMaxDate.getFullYear()}
-                  fromDate={defaultMinDate}
-                  toDate={defaultMaxDate}
                   initialFocus
                 />
               </PopoverContent>
