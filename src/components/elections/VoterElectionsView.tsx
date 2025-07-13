@@ -23,6 +23,8 @@ import {
 import { HybridDialogDrawer } from "@/components/ui/HybridDialogDrawer";
 import { useGetCandidateDetails } from "@/hooks/useCandidateDatabase";
 import { isElectionActive, isElectionCompleted, getElectionStatusDisplay } from "@/lib/utils";
+import { useAccount } from "wagmi";
+import { Address } from "viem";
 
 export function VoterElectionsView() {
   const { electionIds, isLoading: isLoadingIds } = useGetAllElectionIds();
@@ -107,9 +109,6 @@ export function VoterElectionsView() {
   );
 }
 
-import { useAccount } from "wagmi";
-import { Address } from "viem";
-
 interface VoterElectionCardProps {
   electionId: bigint;
   onSelectElection: () => void;
@@ -159,6 +158,52 @@ function VoterElectionCard({ electionId, onSelectElection }: VoterElectionCardPr
       )}
     </div>
   );
+
+  // Determine status card color for active elections
+  let statusCardClass = "";
+  if (isElectionActive(electionDetails.status)) {
+    if (hasVoted) {
+      statusCardClass =
+        "bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800";
+    } else {
+      statusCardClass =
+        "bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800";
+    }
+  } else if (isElectionCompleted(electionDetails.status)) {
+    statusCardClass =
+      "bg-blue-100 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800";
+  } else {
+    statusCardClass =
+      "bg-gray-100 dark:bg-gray-900/30 border border-gray-200 dark:border-gray-800";
+  }
+
+  // Determine status card text color for active elections
+  let statusTextClass = "";
+  if (isElectionActive(electionDetails.status)) {
+    if (hasVoted) {
+      statusTextClass = "text-blue-700 dark:text-blue-300";
+    } else {
+      statusTextClass = "text-green-700 dark:text-green-300";
+    }
+  } else if (isElectionCompleted(electionDetails.status)) {
+    statusTextClass = "text-blue-700 dark:text-blue-300";
+  } else {
+    statusTextClass = "text-gray-700 dark:text-gray-300";
+  }
+
+  // Determine status card description text color for active elections
+  let statusDescClass = "";
+  if (isElectionActive(electionDetails.status)) {
+    if (hasVoted) {
+      statusDescClass = "text-blue-600 dark:text-blue-400";
+    } else {
+      statusDescClass = "text-green-600 dark:text-green-400";
+    }
+  } else if (isElectionCompleted(electionDetails.status)) {
+    statusDescClass = "text-blue-600 dark:text-blue-400";
+  } else {
+    statusDescClass = "text-gray-600 dark:text-gray-400";
+  }
 
   return (
     <>
@@ -265,37 +310,29 @@ function VoterElectionCard({ electionId, onSelectElection }: VoterElectionCardPr
               </div>
 
               {/* Election Status Info */}
-              {isElectionActive(electionDetails.status) ? (
-                <div className="bg-green-100 dark:bg-green-900/30 p-3 rounded-lg border border-green-200 dark:border-green-800">
-                  <div className="flex items-center gap-2 text-green-700 dark:text-green-300">
-                    <CheckCircle2Icon className="h-4 w-4" />
-                    <span className="text-sm font-medium">Ready for voting</span>
-                  </div>
-                  <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                    This election is currently active and accepting votes
-                  </p>
+              <div className={`${statusCardClass} p-3 rounded-lg`}>
+                <div className={`flex items-center gap-2 ${statusTextClass}`}>
+                  <CheckCircle2Icon className="h-4 w-4" />
+                  <span className="text-sm font-medium">
+                    {isElectionActive(electionDetails.status)
+                      ? hasVoted
+                        ? "Already voted"
+                        : "Ready for voting"
+                      : isElectionCompleted(electionDetails.status)
+                        ? "Election completed"
+                        : "Election not active"}
+                  </span>
                 </div>
-              ) : isElectionCompleted(electionDetails.status) ? (
-                <div className="bg-blue-100 dark:bg-blue-900/30 p-3 rounded-lg border border-blue-200 dark:border-blue-800">
-                  <div className="flex items-center gap-2 text-blue-700 dark:text-blue-300">
-                    <CheckCircle2Icon className="h-4 w-4" />
-                    <span className="text-sm font-medium">Election completed</span>
-                  </div>
-                  <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                    Voting has ended and results are final
-                  </p>
-                </div>
-              ) : (
-                <div className="bg-gray-100 dark:bg-gray-900/30 p-3 rounded-lg border border-gray-200 dark:border-gray-800">
-                  <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-                    <InfoIcon className="h-4 w-4" />
-                    <span className="text-sm font-medium">Election not active</span>
-                  </div>
-                  <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                    This election is not currently accepting votes
-                  </p>
-                </div>
-              )}
+                <p className={`text-xs mt-1 ${statusDescClass}`}>
+                  {isElectionActive(electionDetails.status)
+                    ? hasVoted
+                      ? "You have already voted in this election. You may view the results."
+                      : "This election is currently active and accepting votes"
+                    : isElectionCompleted(electionDetails.status)
+                      ? "Voting has ended and results are final"
+                      : "This election is not currently accepting votes"}
+                </p>
+              </div>
             </div>
 
             <div className="ml-6">
