@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Eye, User, Users } from "lucide-react";
-import { PublicElectionsView } from "./PublicElectionsView";
+import { PublicElectionsView } from "./public/PublicElectionsView";
 import { VoterElectionsView } from "./VoterElectionsView";
 import { CandidateElectionsView } from "./CandidateElectionsView";
 
