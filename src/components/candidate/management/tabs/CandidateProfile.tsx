@@ -1,4 +1,4 @@
-import { calculateAge, epochToDateString } from "@/lib/utils/date-conversions";
+import { calculateAge, epochToDateString } from "@/lib/utils";
 import { CandidateDetails } from "@/types";
 
 interface CandidateProfileProps {

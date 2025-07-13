@@ -1,5 +1,5 @@
 import * as v from "valibot";
-import { dateToEpoch, isAtLeast18YearsOld, isValidDateString } from "@/lib/utils/date-conversions";
+import { dateToEpoch, isAtLeast18YearsOld, isValidDateString } from "@/lib/utils";
 import { GenderEnum } from "@/types";
 
 /**

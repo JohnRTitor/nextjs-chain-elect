@@ -1,5 +1,5 @@
 import { CandidateContractParams, Gender } from "@/types";
-import { epochToDateString } from "@/lib/utils/date-conversions";
+import { epochToDateString } from "@/lib/utils";
 import * as v from "valibot";
 import { convertDateOfBirthToEpoch, createAgeValidation, createGenderValidation } from "./shared";
 

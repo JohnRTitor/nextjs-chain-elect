@@ -12,7 +12,7 @@ import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { FormSubmitLoader } from "@/components/common/FormSubmitLoader";
 import { ArrowLeftIcon, VoteIcon, AlertTriangleIcon, ShieldCheckIcon } from "lucide-react";
-import { calculateAge } from "@/lib/utils/date-conversions";
+import { calculateAge } from "@/lib/utils";
 
 interface VoteConfirmationProps {
   electionId: bigint;

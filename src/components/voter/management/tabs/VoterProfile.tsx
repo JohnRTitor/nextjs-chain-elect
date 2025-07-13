@@ -1,4 +1,4 @@
-import { calculateAge, epochToDateString } from "@/lib/utils/date-conversions";
+import { calculateAge, epochToDateString } from "@/lib/utils";
 import { VoterDetails } from "@/types";
 
 interface VoterProfileProps {
@@ -42,7 +42,7 @@ export function VoterProfile({ voterDetails }: VoterProfileProps) {
             {new Date(Number(voterDetails.registrationTimestamp) * 1000).toLocaleString()}
           </p>
         </div>
-        
+
         <div className="space-y-1">
           <p className="text-sm font-medium text-muted-foreground">Times Voted</p>
           <p className="text-base">{voterDetails.timesVoted.toString()}</p>

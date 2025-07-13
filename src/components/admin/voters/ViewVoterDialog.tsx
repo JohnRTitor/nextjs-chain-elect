@@ -5,7 +5,7 @@ import { HybridDialogDrawer } from "@/components/ui/HybridDialogDrawer";
 import { useAdminGetVoterDetails } from "@/hooks/useVoterDatabase";
 import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
-import { calculateAge, epochToDateString } from "@/lib/utils/date-conversions";
+import { calculateAge, epochToDateString } from "@/lib/utils";
 
 interface ViewVoterDialogProps {
   open: boolean;

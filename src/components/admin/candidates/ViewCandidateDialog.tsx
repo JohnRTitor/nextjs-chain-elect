@@ -4,7 +4,7 @@ import { Address } from "viem";
 import { HybridDialogDrawer } from "@/components/ui/HybridDialogDrawer";
 import { useGetCandidateDetails } from "@/hooks/useCandidateDatabase";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
-import { calculateAge, epochToDateString } from "@/lib/utils/date-conversions";
+import { calculateAge, epochToDateString } from "@/lib/utils";
 
 interface ViewCandidateDialogProps {
   open: boolean;

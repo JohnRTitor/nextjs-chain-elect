@@ -25,7 +25,7 @@ import {
   isElectionNew,
   isElectionCompleted,
   getElectionStatusDisplay,
-} from "@/lib/utils/date-conversions";
+} from "@/lib/utils";
 
 export function CandidateElectionsView() {
   const { electionIds, isLoading: isLoadingIds } = useGetAllElectionIds();

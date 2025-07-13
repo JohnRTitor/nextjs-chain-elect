@@ -39,7 +39,7 @@ import {
   isElectionCompleted,
   isElectionArchived,
   getElectionStatusDisplay,
-} from "@/lib/utils/date-conversions";
+} from "@/lib/utils";
 
 interface ElectionListProps {
   electionIds: bigint[];

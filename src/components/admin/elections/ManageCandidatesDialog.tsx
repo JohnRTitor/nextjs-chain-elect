@@ -31,7 +31,7 @@ import { useGetAllCandidates, useGetCandidateDetails } from "@/hooks/useCandidat
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { PlusCircleIcon, MinusCircleIcon, SearchIcon } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { isElectionNew } from "@/lib/utils/date-conversions";
+import { isElectionNew } from "@/lib/utils";
 
 interface ManageCandidatesDialogProps {
   open: boolean;

@@ -30,7 +30,7 @@ import {
   isElectionCompleted,
   getElectionStatusDisplay,
   isElectionNew,
-} from "@/lib/utils/date-conversions";
+} from "@/lib/utils";
 
 export function PublicElectionsView() {
   const { electionIds, isLoading: isLoadingIds } = useGetAllElectionIds();

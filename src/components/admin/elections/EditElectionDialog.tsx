@@ -18,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useGetElectionDetails, useAdminUpdateElection } from "@/hooks/useElectionDatabase";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { ElectionFormSchema, ElectionFormValues } from "@/lib/schemas/election-form";
-import { isElectionNew, getElectionStatusDisplay } from "@/lib/utils/date-conversions";
+import { isElectionNew, getElectionStatusDisplay } from "@/lib/utils";
 
 interface EditElectionDialogProps {
   open: boolean;

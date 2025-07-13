@@ -22,11 +22,7 @@ import {
 } from "lucide-react";
 import { HybridDialogDrawer } from "@/components/ui/HybridDialogDrawer";
 import { useGetCandidateDetails } from "@/hooks/useCandidateDatabase";
-import {
-  isElectionActive,
-  isElectionCompleted,
-  getElectionStatusDisplay,
-} from "@/lib/utils/date-conversions";
+import { isElectionActive, isElectionCompleted, getElectionStatusDisplay } from "@/lib/utils";
 
 export function VoterElectionsView() {
   const { electionIds, isLoading: isLoadingIds } = useGetAllElectionIds();

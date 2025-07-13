@@ -14,7 +14,7 @@ import {
 import { useGetElectionDetails, useAdminDeleteElection } from "@/hooks/useElectionDatabase";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { Loader2Icon } from "lucide-react";
-import { isElectionNew } from "@/lib/utils/date-conversions";
+import { isElectionNew } from "@/lib/utils";
 
 interface DeleteElectionDialogProps {
   open: boolean;

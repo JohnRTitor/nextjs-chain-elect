@@ -7,11 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { Address } from "viem";
-import {
-  isElectionActive,
-  isElectionCompleted,
-  getElectionStatusDisplay,
-} from "@/lib/utils/date-conversions";
+import { isElectionActive, isElectionCompleted, getElectionStatusDisplay } from "@/lib/utils";
 
 interface ElectionDetailsDialogProps {
   open: boolean;

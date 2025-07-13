@@ -17,7 +17,7 @@ import { ArrowLeftIcon, CheckCircle2Icon, InfoIcon } from "lucide-react";
 import { CandidateSelection } from "./CandidateSelection";
 import { VoteConfirmation } from "./VoteConfirmation";
 import { VotingResults } from "./VotingResults";
-import { isElectionActive, getElectionStatusDisplay } from "@/lib/utils/date-conversions";
+import { isElectionActive, getElectionStatusDisplay } from "@/lib/utils";
 
 interface VotingSessionProps {
   electionId: bigint;

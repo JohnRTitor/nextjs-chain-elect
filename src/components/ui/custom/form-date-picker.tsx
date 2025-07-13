@@ -15,7 +15,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { dateToEpoch, getMaxDateOfBirth, stringToDate } from "@/lib/utils/date-conversions";
+import { dateToEpoch, getMaxDateOfBirth, stringToDate } from "@/lib/utils";
 
 type FormDatePickerControlProps<T extends FieldValues> = {
   control: Control<T>;
@@ -141,8 +141,8 @@ export function FormDatePickerControl<T extends FieldValues>({
                       // Format the date in YYYY-MM-DD format properly accounting for timezone
                       // This ensures we get the exact date the user selected regardless of timezone
                       const year = date.getFullYear();
-                      const month = String(date.getMonth() + 1).padStart(2, '0');
-                      const day = String(date.getDate()).padStart(2, '0');
+                      const month = String(date.getMonth() + 1).padStart(2, "0");
+                      const day = String(date.getDate()).padStart(2, "0");
                       const dateString = `${year}-${month}-${day}`;
 
                       // Update the form value with the date string

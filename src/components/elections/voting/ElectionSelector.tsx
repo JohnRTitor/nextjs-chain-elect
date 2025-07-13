@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { InfoIcon, VoteIcon } from "lucide-react";
-import { isElectionActive } from "@/lib/utils/date-conversions";
+import { isElectionActive } from "@/lib/utils";
 
 interface ElectionSelectorProps {
   onElectionSelectAction: (electionId: bigint) => void;

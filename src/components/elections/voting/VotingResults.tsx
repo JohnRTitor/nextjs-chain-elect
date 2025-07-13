@@ -15,7 +15,7 @@ import { Progress } from "@/components/ui/progress";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { CheckCircle2Icon, TrophyIcon, InfoIcon } from "lucide-react";
-import { isElectionActive } from "@/lib/utils/date-conversions";
+import { isElectionActive } from "@/lib/utils";
 
 interface VotingResultsProps {
   electionId: bigint;
