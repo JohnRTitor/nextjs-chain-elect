@@ -135,32 +135,22 @@ export function FormDatePickerControl<T extends FieldValues>({
                 <Calendar
                   mode="single"
                   selected={dateValue}
-                  defaultMonth={dateValue} // Set initial month view to the selected date
+                  defaultMonth={dateValue}
                   onSelect={(date) => {
                     if (date) {
-                      // Format the date in YYYY-MM-DD format properly accounting for timezone
-                      // This ensures we get the exact date the user selected regardless of timezone
                       const year = date.getFullYear();
                       const month = String(date.getMonth() + 1).padStart(2, "0");
                       const day = String(date.getDate()).padStart(2, "0");
                       const dateString = `${year}-${month}-${day}`;
-
-                      // Update the form value with the date string
                       field.onChange(dateString);
-
-                      // For debugging - log the epoch value that would be sent to the blockchain
-                      const epochValue = dateToEpoch(dateString);
-                      console.log(`Selected date: ${dateString}, Epoch value: ${epochValue}`);
                     } else {
                       field.onChange("");
                     }
                   }}
-                  disabled={(date) => {
-                    return date < defaultMinDate || date > defaultMaxDate;
-                  }}
-                  captionLayout="dropdown-buttons"
-                  fromYear={fromYear}
-                  toYear={toYear}
+                  disabled={(date) => date < defaultMinDate || date > defaultMaxDate}
+                  captionLayout="dropdown"
+                  fromYear={defaultMinDate.getFullYear()}
+                  toYear={defaultMaxDate.getFullYear()}
                   fromDate={defaultMinDate}
                   toDate={defaultMaxDate}
                   initialFocus
