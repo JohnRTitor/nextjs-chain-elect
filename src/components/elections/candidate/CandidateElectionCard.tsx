@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
-import { useGetAllElectionIds, useGetElectionDetails } from "@/hooks/useElectionDatabase";
+import { useEffect } from "react";
+import { useGetElectionDetails } from "@/hooks/useElectionDatabase";
 import { useEnrollCandidate, useWithdrawCandidate } from "@/hooks/useElectionDatabase";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
@@ -27,94 +27,18 @@ import {
   getElectionStatusDisplay,
 } from "@/lib/utils";
 
-export function CandidateElectionsView() {
-  const { electionIds, isLoading: isLoadingIds } = useGetAllElectionIds();
-  const [processingElectionId, setProcessingElectionId] = useState<bigint | null>(null);
-
-  if (isLoadingIds) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Elections - Candidate View</CardTitle>
-          <CardDescription>Enroll in elections as a candidate</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-center py-8">
-            <LoadingSpinner message="Loading elections..." />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (!electionIds || electionIds.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Elections - Candidate View</CardTitle>
-          <CardDescription>Enroll in elections as a candidate</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Alert>
-            <InfoIcon className="h-4 w-4" />
-            <AlertTitle>No Elections Available</AlertTitle>
-            <AlertDescription>
-              There are currently no elections available for candidate enrollment. Check back later
-              for upcoming elections.
-            </AlertDescription>
-          </Alert>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <Alert>
-        <InfoIcon className="h-4 w-4" />
-        <AlertTitle>Candidate Access</AlertTitle>
-        <AlertDescription>
-          As a registered candidate, you can enroll in active elections. Once enrolled, voters will
-          be able to see your profile and vote for you.
-        </AlertDescription>
-      </Alert>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Available Elections</CardTitle>
-          <CardDescription>
-            Enroll in elections to participate as a candidate. You can withdraw your candidacy
-            before voting ends.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {electionIds.map((electionId) => (
-            <CandidateElectionCard
-              key={electionId.toString()}
-              electionId={electionId}
-              isProcessing={processingElectionId === electionId}
-              onStartProcessing={() => setProcessingElectionId(electionId)}
-              onEndProcessing={() => setProcessingElectionId(null)}
-            />
-          ))}
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
 interface CandidateElectionCardProps {
   electionId: bigint;
   isProcessing: boolean;
-  onStartProcessing: () => void;
-  onEndProcessing: () => void;
+  onStartProcessingAction: () => void;
+  onEndProcessingAction: () => void;
 }
 
-function CandidateElectionCard({
+export function CandidateElectionCard({
   electionId,
   isProcessing,
-  onStartProcessing,
-  onEndProcessing,
+  onStartProcessingAction,
+  onEndProcessingAction,
 }: CandidateElectionCardProps) {
   const { address } = useAccount();
   const { electionDetails, isLoading } = useGetElectionDetails(electionId);
@@ -140,19 +64,19 @@ function CandidateElectionCard({
   const canModifyCandidates = electionDetails && isElectionNew(electionDetails.status);
 
   // Handle enrollment confirmation
-  React.useEffect(() => {
+  useEffect(() => {
     if (isEnrollConfirmed || isWithdrawConfirmed) {
-      onEndProcessing();
+      onEndProcessingAction();
     }
-  }, [isEnrollConfirmed, isWithdrawConfirmed, onEndProcessing]);
+  }, [isEnrollConfirmed, isWithdrawConfirmed, onEndProcessingAction]);
 
   const handleEnroll = async () => {
-    onStartProcessing();
+    onStartProcessingAction();
     await enrollCandidate(electionId);
   };
 
   const handleWithdraw = async () => {
-    onStartProcessing();
+    onStartProcessingAction();
     await withdrawCandidate(electionId);
   };
 

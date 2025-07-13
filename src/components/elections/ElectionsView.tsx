@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { EyeIcon, UserIcon, UsersIcon } from "lucide-react";
 import { PublicElectionsView } from "./public/PublicElectionsView";
 import { VoterElectionsView } from "./voter/VoterElectionsView";
-import { CandidateElectionsView } from "./CandidateElectionsView";
+import { CandidateElectionsView } from "./candidate/CandidateElectionsView";
 
 type ViewMode = "public" | "voter" | "candidate";
 
