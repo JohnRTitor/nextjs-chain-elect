@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { VotingSession } from "@/components/voting/VotingSession";
+import { VotingSession } from "@/components/elections/voting/VotingSession";
 import {
   InfoIcon,
   VoteIcon,
