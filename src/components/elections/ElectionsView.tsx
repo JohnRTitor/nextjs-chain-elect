@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Eye, User, Users } from "lucide-react";
 import { PublicElectionsView } from "./public/PublicElectionsView";
-import { VoterElectionsView } from "./VoterElectionsView";
+import { VoterElectionsView } from "./voter/VoterElectionsView";
 import { CandidateElectionsView } from "./CandidateElectionsView";
 
 type ViewMode = "public" | "voter" | "candidate";

@@ -1,17 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import {
-  useGetAllElectionIds,
-  useGetElectionDetails,
-  useHasVoted,
-} from "@/hooks/useElectionDatabase";
+import { useGetElectionDetails, useHasVoted } from "@/hooks/useElectionDatabase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LoadingSpinner } from "@/components/common/LoadingSpinner";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { VotingSession } from "@/components/elections/voting/VotingSession";
+import { Alert } from "@/components/ui/alert";
 import {
   InfoIcon,
   VoteIcon,
@@ -25,96 +20,14 @@ import { useGetCandidateDetails } from "@/hooks/useCandidateDatabase";
 import { isElectionActive, isElectionCompleted, getElectionStatusDisplay } from "@/lib/utils";
 import { useAccount } from "wagmi";
 import { Address } from "viem";
-
-export function VoterElectionsView() {
-  const { electionIds, isLoading: isLoadingIds } = useGetAllElectionIds();
-  const [selectedElectionId, setSelectedElectionId] = useState<bigint | null>(null);
-
-  if (isLoadingIds) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Elections - Voter View</CardTitle>
-          <CardDescription>Vote in active elections</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-center py-8">
-            <LoadingSpinner message="Loading elections..." />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (!electionIds || electionIds.length === 0) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle>Elections - Voter View</CardTitle>
-          <CardDescription>Vote in active elections</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Alert>
-            <InfoIcon className="h-4 w-4" />
-            <AlertTitle>No Elections Available</AlertTitle>
-            <AlertDescription>
-              There are currently no elections available for voting. Check back later for upcoming
-              elections.
-            </AlertDescription>
-          </Alert>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  // If an election is selected, show the voting session
-  if (selectedElectionId) {
-    return (
-      <VotingSession
-        electionId={selectedElectionId}
-        onBackToSelectionAction={() => setSelectedElectionId(null)}
-      />
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <Alert>
-        <InfoIcon className="h-4 w-4" />
-        <AlertTitle>Voter Access</AlertTitle>
-        <AlertDescription>
-          You can vote in active elections. Your vote is encrypted and recorded on the blockchain,
-          ensuring transparency and immutability. You can only vote once per election.
-        </AlertDescription>
-      </Alert>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Available Elections</CardTitle>
-          <CardDescription>
-            Select an election to cast your vote. Only active elections allow voting.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {electionIds.map((electionId) => (
-            <VoterElectionCard
-              key={electionId.toString()}
-              electionId={electionId}
-              onSelectElection={() => setSelectedElectionId(electionId)}
-            />
-          ))}
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
+import { VoterCandidateCard } from "./VoterCandidateCard";
 
 interface VoterElectionCardProps {
   electionId: bigint;
-  onSelectElection: () => void;
+  onSelectElectionAction: () => void;
 }
 
-function VoterElectionCard({ electionId, onSelectElection }: VoterElectionCardProps) {
+export function VoterElectionCard({ electionId, onSelectElectionAction }: VoterElectionCardProps) {
   const { address } = useAccount();
   const { electionDetails, isLoading } = useGetElectionDetails(electionId);
   const { hasVoted, isLoading: isLoadingHasVoted } = useHasVoted(electionId, address);
@@ -339,7 +252,7 @@ function VoterElectionCard({ electionId, onSelectElection }: VoterElectionCardPr
               {isElectionActive(electionDetails.status) ? (
                 hasVoted ? (
                   <Button
-                    onClick={onSelectElection}
+                    onClick={onSelectElectionAction}
                     className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
                   >
                     <VoteIcon className="h-4 w-4" />
@@ -348,7 +261,7 @@ function VoterElectionCard({ electionId, onSelectElection }: VoterElectionCardPr
                   </Button>
                 ) : (
                   <Button
-                    onClick={onSelectElection}
+                    onClick={onSelectElectionAction}
                     className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
                   >
                     <VoteIcon className="h-4 w-4" />
@@ -367,52 +280,5 @@ function VoterElectionCard({ electionId, onSelectElection }: VoterElectionCardPr
         </CardContent>
       </Card>
     </>
-  );
-}
-
-// Candidate Card for Drawer/Dialog
-function VoterCandidateCard({ candidateAddress }: { candidateAddress: Address }) {
-  const { candidateDetails, isLoading } = useGetCandidateDetails(candidateAddress);
-
-  if (isLoading) {
-    return (
-      <div className="p-3 border rounded-lg">
-        <LoadingSpinner size="sm" message="Loading candidate..." />
-      </div>
-    );
-  }
-
-  if (!candidateDetails) {
-    return (
-      <div className="p-3 border rounded-lg text-muted-foreground text-sm">
-        Candidate details unavailable.
-      </div>
-    );
-  }
-
-  return (
-    <div className="p-4 border rounded-lg bg-background">
-      <div className="flex items-center gap-3">
-        <div className="font-semibold">{candidateDetails.name}</div>
-        <Badge variant="outline" className="text-xs">
-          {candidateDetails.gender === 0 ? "Male" : "Female"}
-        </Badge>
-        <Badge variant="outline" className="text-xs">
-          Age:{" "}
-          {Math.floor(
-            (Date.now() / 1000 - Number(candidateDetails.dateOfBirthEpoch)) /
-              (60 * 60 * 24 * 365.25),
-          )}
-        </Badge>
-      </div>
-      <div className="text-sm mt-2">
-        <span className="font-medium text-muted-foreground">Qualifications: </span>
-        <span>{candidateDetails.qualifications}</span>
-      </div>
-      <div className="text-sm">
-        <span className="font-medium text-muted-foreground">Manifesto: </span>
-        <span>{candidateDetails.manifesto}</span>
-      </div>
-    </div>
   );
 }
